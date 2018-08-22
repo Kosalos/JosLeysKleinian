@@ -163,8 +163,6 @@ float3 lighting
         if(dotRV >= 0) color += control.lighting.specular * pow(dotRV, 2);
     }
     
-//zorro    color *= (1 - distance / control.fog);
-    
     return color;
 }
 

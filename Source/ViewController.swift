@@ -125,8 +125,8 @@ class ViewController: UIViewController, WGDelegate {
         wg.addColor(3,Float(RowHT))
         wg.addCommand("FourGen",.FourGen)
         wg.addLine()
-        wg.addSingleFloat(&control.Clamp_y, 0.01,1,0.1, "Clamp_y",.refresh)
-        wg.addSingleFloat(&control.Clamp_DF, 0.01,2,0.3, "Clamp_DF",.refresh)
+        wg.addSingleFloat(&control.Clamp_y, 0.001,2,0.1, "Clamp_y",.refresh)
+        wg.addSingleFloat(&control.Clamp_DF, 0.001,2,0.3, "Clamp_DF",.refresh)
         wg.addSingleFloat(&control.box_size_x, 0.01,2,0.3, "box_size_x",.refresh)
         wg.addSingleFloat(&control.box_size_z, 0.01,2,0.3, "box_size_z",.refresh)
         wg.addLine()
@@ -135,11 +135,12 @@ class ViewController: UIViewController, WGDelegate {
 
         wg.addTriplet(&control.InvCenter,0,1.5,0.2,"InvCenter",.refresh)
 
-        wg.addSingleFloat(&control.DeltaAngle, 0.1,10,1, "DeltaAngle",.refresh)
+        wg.addSingleFloat(&control.DeltaAngle, 0.1,10,0.1, "DeltaAngle",.refresh)
         wg.addSingleFloat(&control.InvRadius, 0.01,2,0.3, "InvRadius",.refresh)
         wg.addSingleFloat(&control.deScale, 0.01,2,0.5, "DE Scale",.refresh)
 
-        wg.addSingleFloat(&control.epsilon,  0.00001, 0.05, 0.01, "epsilon",.refresh)
+        wg.addSingleFloat(&control.epsilon, 0.00001, 0.05, 0.01, "epsilon",.refresh)
+        wg.addSingleFloat(&control.normalEpsilon, 0.00001, 0.04, 0.002, "N epsilon",.refresh)
         wg.addLine()
         let sPmin:Float = 0.01
         let sPmax:Float = 1
@@ -233,13 +234,12 @@ class ViewController: UIViewController, WGDelegate {
         if cTranslateZ.update() { refresh = true }
         if cRotate.update() { refresh = true }
         if parallax.update() { refresh = true }
+        if wg.update() { refresh = true }
         
-        if wg.update() {
-            refresh = true
+        if refresh && !isBusy {
             if !tv.isHidden { controlDisplay() }
+            updateImage()
         }
-        
-        if refresh && !isBusy { updateImage() }
     }
     
     //MARK: -
@@ -260,7 +260,7 @@ class ViewController: UIViewController, WGDelegate {
 
         control.color = float3(0.7)
         control.parallax = 0.0011
-        control.fog = 32
+        control.fog = 8         // max distance
         
         control.fMaxSteps = 70
         control.fFinal_Iterations = 21
