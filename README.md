@@ -19,7 +19,7 @@ This latest posting shows the method I chose:
    defaultRecordingsList[] array at the bottom of file. 
    
 How to access these 'default recordings': \
-Press the 'Default' button on the upper left of Save/Load popover to display the list of recordings you saved.
+Press the 'Default' button on the upper left of Save/Load popover to display the list of recordings you saved. \
 Update ---------------------------------- 
 
 ![Screenshot](screenshot.png)
