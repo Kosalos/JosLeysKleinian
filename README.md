@@ -12,7 +12,7 @@ Update ---------------------------------- \
 Added Default Recordings. \
 I have always faced this problem: What is the easiest way to provide a bunch of recorded datasets \
 along with the app? \
-This latest posting shows the method I chose: \
+This latest posting shows the method I chose: 
 1. Set the params to produce an image you like, then launch Save/Load, and press any 'Save' button. \
 2. In the console window of Xcode, some source code will be printed. \
 3. Copy/Paste that source code to ControlDisplay.swift, and add the function name to the \
