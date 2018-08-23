@@ -7,10 +7,11 @@ protocol SLCellDelegate: class {
 class SaveLoadCell: UITableViewCell {
     weak var delegate: SLCellDelegate?
     @IBOutlet var loadCell: UIButton!
+    @IBOutlet var saveButton: UIButton!
     @IBAction func buttonTapped(_ sender: UIButton) {  delegate?.didTapButton(sender) }
 }
 
-enum SaveLoadStyle { case settings,recordings }
+enum SaveLoadStyle { case settings,recordings,defaultRecordings }
 
 var saveLoadStyle:SaveLoadStyle = .settings
 
@@ -23,24 +24,41 @@ class SaveLoadViewController: UIViewController,UITableViewDataSource, UITableVie
     @IBOutlet var tableView: UITableView!
     @IBOutlet var legend: UILabel!
     
+    @IBAction func defaultButtonPressed(_ sender: UIButton) {
+        saveLoadStyle = .defaultRecordings
+        tableView.reloadData()
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int { return 1 }
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return 50 }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if saveLoadStyle == .defaultRecordings { return defaultRecordingsList.count }
+        return 50
+    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SLCell", for: indexPath) as! SaveLoadCell
         cell.delegate = self
         cell.tag = indexPath.row
-        
-        let dateString = determineDateString(indexPath.row)
+
         var str:String = ""
         
-        if dateString == "**" {
-            str = "** unused **"
-            cell.loadCell.backgroundColor = UIColor.black
+        if saveLoadStyle == .defaultRecordings {
+            str = String(format:"Default Recording %2d", indexPath.row+1)
+            cell.loadCell.backgroundColor = UIColor(red:0.1, green:0.5, blue:0.4, alpha:1)
+            cell.saveButton.isHidden = true
         }
         else {
-            str = String(format:"%2d    %@", indexPath.row+1,dateString)
-            cell.loadCell.backgroundColor = UIColor(red:0.1, green:0.5, blue:0.4, alpha:1)
+            let dateString = determineDateString(indexPath.row)
+            
+            if dateString == "**" {
+                str = "** unused **"
+                cell.loadCell.backgroundColor = UIColor.black
+            }
+            else {
+                str = String(format:"%2d    %@", indexPath.row+1,dateString)
+                cell.loadCell.backgroundColor = UIColor(red:0.1, green:0.5, blue:0.4, alpha:1)
+            }
         }
         
         cell.loadCell.setTitle(str, for: UIControlState.normal)
@@ -65,7 +83,7 @@ class SaveLoadViewController: UIViewController,UITableViewDataSource, UITableVie
             
             if sender.tag == 1 { // save
                 control.version = versionNumber
-                control.aData = aData
+                control.aData = vc.aData
                 saveAndDismissDialog(indexPath.row)
             }
         }
@@ -92,6 +110,7 @@ class SaveLoadViewController: UIViewController,UITableViewDataSource, UITableVie
         var alertController:UIAlertController! = nil
         if saveLoadStyle == .settings {
             alertController = UIAlertController(title: "Save Settings", message: "Confirm overwrite of Settings storage", preferredStyle: .alert)
+            displayControlGeneratorAsSourceCode()
         } else {
             alertController = UIAlertController(title: "Save Recording", message: "Confirm overwrite of Recording storage", preferredStyle: .alert)
         }
@@ -103,7 +122,7 @@ class SaveLoadViewController: UIViewController,UITableViewDataSource, UITableVie
                 
                 if saveLoadStyle == .settings {
                     control.version = versionNumber
-                    control.aData = aData
+                    control.aData = vc.aData
                     data = NSData(bytes:&control, length:MemoryLayout<Control>.size)
                 }
                 
@@ -160,16 +179,21 @@ class SaveLoadViewController: UIViewController,UITableViewDataSource, UITableVie
     }
     
     func loadAndDismissDialog(_ index:Int) {
-        if !loadData(index) { return } // clicked on empty entry
+        if saveLoadStyle == .defaultRecordings {
+            defaultRecordingsList[index]()
+            self.dismiss(animated: false, completion: {()->Void in vc.controlJustLoaded() })
+            return
+        }
+        else {
+            if !loadData(index) { return } // clicked on empty entry
+        }
         
         if saveLoadStyle == .settings {
             if control.version != versionNumber { vc.reset() }
         }
-
+        
         if saveLoadStyle == .settings {
-            self.dismiss(animated: false, completion: {()->Void in
-                vc.controlJustLoaded()
-            })
+            self.dismiss(animated: false, completion: {()->Void in vc.controlJustLoaded() })
         }
     }
 }

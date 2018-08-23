@@ -13,7 +13,7 @@
         <!--View Controller-->
         <scene sceneID="tXr-a1-R10">
             <objects>
-                <viewController id="BV1-FR-VrT" customClass="ViewController" customModule="MandelBox2" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BV1-FR-VrT" customClass="ViewController" customModule="JosLeysKleinian" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="9sQ-bp-QHc"/>
                         <viewControllerLayoutGuide type="bottom" id="yDg-Pc-LEh"/>
@@ -22,43 +22,43 @@
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SKK-Rp-etB" customClass="MetalTextureView" customModule="MandelBox2" customModuleProvider="target">
+                            <view contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SKK-Rp-etB" customClass="MetalTextureView" customModule="JosLeysKleinian" customModuleProvider="target">
                                 <rect key="frame" x="63" y="67" width="317" height="219"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                             </view>
-                            <view contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fQr-Vt-l2n" userLabel="cTranslateXY" customClass="CTranslate" customModule="MandelBox2" customModuleProvider="target">
+                            <view contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fQr-Vt-l2n" userLabel="cTranslateXY" customClass="CTranslate" customModule="JosLeysKleinian" customModuleProvider="target">
                                 <rect key="frame" x="399" y="410" width="127" height="118"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.070750191810000002" green="0.2024126202" blue="0.40010443330000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <gestureRecognizers/>
                             </view>
-                            <view contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BxV-WD-Mvx" userLabel="cRotate" customClass="CRotate" customModule="MandelBox2" customModuleProvider="target">
+                            <view contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BxV-WD-Mvx" userLabel="cRotate" customClass="CRotate" customModule="JosLeysKleinian" customModuleProvider="target">
                                 <rect key="frame" x="636" y="410" width="127" height="118"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.070750191810000002" green="0.2024126202" blue="0.40010443330000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <gestureRecognizers/>
                             </view>
-                            <view contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EjD-bU-DCn" customClass="MetalTextureView" customModule="MandelBox2" customModuleProvider="target">
+                            <view contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EjD-bU-DCn" customClass="MetalTextureView" customModule="JosLeysKleinian" customModuleProvider="target">
                                 <rect key="frame" x="63" y="309" width="317" height="219"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                             </view>
-                            <view contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W5q-ES-1LR" userLabel="cTranslateZ" customClass="CTranslateZ" customModule="MandelBox2" customModuleProvider="target">
+                            <view contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W5q-ES-1LR" userLabel="cTranslateZ" customClass="CTranslateZ" customModule="JosLeysKleinian" customModuleProvider="target">
                                 <rect key="frame" x="545" y="410" width="48" height="118"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.070750191810000002" green="0.2024126202" blue="0.40010443330000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <gestureRecognizers/>
                             </view>
-                            <view contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rky-bF-YBq" userLabel="cRotate" customClass="WidgetGroup" customModule="MandelBox2" customModuleProvider="target">
+                            <view contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rky-bF-YBq" userLabel="cRotate" customClass="WidgetGroup" customModule="JosLeysKleinian" customModuleProvider="target">
                                 <rect key="frame" x="399" y="266" width="127" height="118"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.63352633250000001" green="0.40589094790000002" blue="0.025209205160000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <gestureRecognizers/>
                             </view>
-                            <view tag="1" contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fYb-lO-fub" customClass="Widget" customModule="MandelBox2" customModuleProvider="target">
+                            <view tag="1" contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fYb-lO-fub" customClass="Widget" customModule="JosLeysKleinian" customModuleProvider="target">
                                 <rect key="frame" x="555" y="354" width="119" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -94,7 +94,7 @@
         <!--SaveLoadVC-->
         <scene sceneID="7cL-dd-aq2">
             <objects>
-                <viewController title="KeypadVC" id="IYT-Gi-YRN" userLabel="SaveLoadVC" customClass="SaveLoadViewController" customModule="MandelBox2" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="KeypadVC" id="IYT-Gi-YRN" userLabel="SaveLoadVC" customClass="SaveLoadViewController" customModule="JosLeysKleinian" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="YOC-hq-7i4"/>
                         <viewControllerLayoutGuide type="bottom" id="QOV-Ux-k8R"/>
@@ -109,7 +109,7 @@
                                 <color key="separatorColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="sectionIndexBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="SLCell" rowHeight="58" id="XKy-ra-BmS" customClass="SaveLoadCell" customModule="MandelBox2" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="SLCell" rowHeight="58" id="XKy-ra-BmS" customClass="SaveLoadCell" customModule="JosLeysKleinian" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="373" height="58"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="XKy-ra-BmS" id="fcL-5w-6kH">
@@ -117,7 +117,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UZq-6A-MRc">
-                                                    <rect key="frame" x="-5" y="3" width="287" height="49.5"/>
+                                                    <rect key="frame" x="2" y="6" width="287" height="44"/>
                                                     <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="287" id="KyH-Hh-fWP"/>
@@ -130,7 +130,7 @@
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ufx-IT-ja3">
-                                                    <rect key="frame" x="297" y="3" width="68" height="46.5"/>
+                                                    <rect key="frame" x="304" y="6" width="54" height="41"/>
                                                     <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="54" id="Bc1-68-PZl"/>
@@ -146,37 +146,49 @@
                                             <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <constraints>
                                                 <constraint firstItem="UZq-6A-MRc" firstAttribute="leading" secondItem="fcL-5w-6kH" secondAttribute="leadingMargin" constant="-13" id="1Vs-dq-xRW"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="Ufx-IT-ja3" secondAttribute="trailing" id="5au-fI-CgL"/>
                                                 <constraint firstItem="UZq-6A-MRc" firstAttribute="top" secondItem="fcL-5w-6kH" secondAttribute="topMargin" constant="-5" id="Dr0-oy-cRq"/>
                                                 <constraint firstItem="UZq-6A-MRc" firstAttribute="baseline" secondItem="Ufx-IT-ja3" secondAttribute="firstBaseline" constant="1.5" id="HAQ-DG-fYd"/>
-                                                <constraint firstItem="Ufx-IT-ja3" firstAttribute="leading" secondItem="UZq-6A-MRc" secondAttribute="trailing" constant="15" id="Lbl-NF-np0"/>
+                                                <constraint firstItem="Ufx-IT-ja3" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="UZq-6A-MRc" secondAttribute="trailing" symbolic="YES" id="Lbl-NF-np0"/>
                                                 <constraint firstItem="Ufx-IT-ja3" firstAttribute="baseline" secondItem="UZq-6A-MRc" secondAttribute="firstBaseline" constant="-1.5" id="NNO-f4-kY6"/>
                                                 <constraint firstItem="UZq-6A-MRc" firstAttribute="top" secondItem="Ufx-IT-ja3" secondAttribute="top" id="aBJ-jd-i7t"/>
                                                 <constraint firstItem="UZq-6A-MRc" firstAttribute="bottom" secondItem="fcL-5w-6kH" secondAttribute="bottomMargin" constant="3" id="rOP-3M-m4p"/>
+                                                <constraint firstAttribute="trailing" secondItem="Ufx-IT-ja3" secondAttribute="trailing" constant="15" id="s5B-ub-a0J"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="loadCell" destination="UZq-6A-MRc" id="zbM-B2-Rj2"/>
+                                            <outlet property="saveButton" destination="Ufx-IT-ja3" id="vgC-ur-Ftp"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="88o-Aa-C50">
-                                <rect key="frame" x="13" y="28" width="373" height="21"/>
+                                <rect key="frame" x="13" y="28" width="291" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yRU-zK-fdP">
+                                <rect key="frame" x="328" y="22" width="55" height="33"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <state key="normal" title="Default"/>
+                                <connections>
+                                    <action selector="defaultButtonPressed:" destination="IYT-Gi-YRN" eventType="touchUpInside" id="VPS-Bi-Nm1"/>
+                                </connections>
+                            </button>
                         </subviews>
-                        <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.1223958433" green="0.1223958433" blue="0.1223958433" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
                             <constraint firstItem="QOV-Ux-k8R" firstAttribute="top" secondItem="tdf-xW-8Km" secondAttribute="bottom" constant="8" id="DpC-bj-gH2"/>
+                            <constraint firstItem="yRU-zK-fdP" firstAttribute="bottom" secondItem="88o-Aa-C50" secondAttribute="bottom" constant="6" id="Lzc-9Y-god"/>
                             <constraint firstItem="88o-Aa-C50" firstAttribute="top" secondItem="YOC-hq-7i4" secondAttribute="bottom" constant="8" id="NyX-7l-VsK"/>
                             <constraint firstAttribute="trailing" secondItem="tdf-xW-8Km" secondAttribute="trailing" constant="14" id="OO0-EN-FqZ"/>
                             <constraint firstItem="tdf-xW-8Km" firstAttribute="leading" secondItem="Jf7-hc-17i" secondAttribute="leading" constant="13" id="bcK-67-cLg"/>
                             <constraint firstItem="88o-Aa-C50" firstAttribute="leading" secondItem="Jf7-hc-17i" secondAttribute="leading" constant="13" id="fDx-PK-hSa"/>
-                            <constraint firstAttribute="trailing" secondItem="88o-Aa-C50" secondAttribute="trailing" constant="14" id="ph2-9Z-Jko"/>
+                            <constraint firstAttribute="trailing" secondItem="yRU-zK-fdP" secondAttribute="trailing" constant="17" id="gya-XJ-wTO"/>
+                            <constraint firstAttribute="trailing" secondItem="88o-Aa-C50" secondAttribute="trailing" constant="96" id="ph2-9Z-Jko"/>
                             <constraint firstItem="tdf-xW-8Km" firstAttribute="top" secondItem="88o-Aa-C50" secondAttribute="bottom" constant="5" id="rvn-VN-lcl"/>
+                            <constraint firstItem="yRU-zK-fdP" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="88o-Aa-C50" secondAttribute="trailing" symbolic="YES" id="xzn-sF-PmB"/>
                         </constraints>
                     </view>
                     <value key="contentSizeForViewInPopover" type="size" width="400" height="600"/>
@@ -188,12 +200,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wvV-2f-ShA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-581" y="232"/>
+            <point key="canvasLocation" x="-581.25" y="231.91800878477304"/>
         </scene>
         <!--Help View Controller-->
         <scene sceneID="SJ5-qL-JDu">
             <objects>
-                <viewController id="5CA-AY-ZSF" customClass="HelpViewController" customModule="MandelBox2" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="5CA-AY-ZSF" customClass="HelpViewController" customModule="JosLeysKleinian" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="wV2-J6-T2n"/>
                         <viewControllerLayoutGuide type="bottom" id="A4n-4y-7J1"/>

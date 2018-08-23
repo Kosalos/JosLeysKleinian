@@ -20,8 +20,8 @@ class ArcBall {
         adjustHeight = 1 / ((newHeight - 1) * 0.5)
         startPosition = matrix3fSetIdentity()
         
-        aData.endPosition = matrix3fSetIdentity()
-        aData.transformMatrix = copyMatrixToQuaternion(aData.transformMatrix,aData.endPosition)
+        vc.aData.endPosition = matrix3fSetIdentity()
+        vc.aData.transformMatrix = copyMatrixToQuaternion(vc.aData.transformMatrix,vc.aData.endPosition)
     }
 
     func quaternionToMatrix(_ q1:float4) -> float3x3 {
@@ -105,7 +105,7 @@ class ArcBall {
     
     func mouseDown(_ cgPt:CGPoint) {
         startVertex = mapToSphere(cgPt)
-        startPosition = aData.endPosition
+        startPosition = vc.aData.endPosition
        //Swift.print("ArcBall down = ",cgPt.x,cgPt.y)
     }
     
@@ -127,8 +127,8 @@ class ArcBall {
             newRot.w = vector3fDot(startVertex,endVertex)
         }
 
-        aData.endPosition = quaternionToMatrix(newRot) * startPosition
-        aData.transformMatrix = copyMatrixToQuaternion(aData.transformMatrix,aData.endPosition)
+        vc.aData.endPosition = quaternionToMatrix(newRot) * startPosition
+        vc.aData.transformMatrix = copyMatrixToQuaternion(vc.aData.transformMatrix,vc.aData.endPosition)
     }
 }
 

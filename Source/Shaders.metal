@@ -157,7 +157,7 @@ float3 lighting
     if(dotLN >= 0) {
         color += control.lighting.diffuse * dotLN;
         
-        float3 V = normalize(float3(distance));
+        float3 V = normalize(position); // float3(distance));   // <- using position = less color flickering as you mnavigate
         float3 R = normalize(reflect(-L, normal));
         float dotRV = dot(R, V);
         if(dotRV >= 0) color += control.lighting.specular * pow(dotRV, 2);

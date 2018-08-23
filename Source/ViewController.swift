@@ -3,10 +3,10 @@ import Metal
 import simd
 
 var control = Control()
-var aData = ArcBallData()
 var vc:ViewController! = nil
 
 class ViewController: UIViewController, WGDelegate {
+    var aData = ArcBallData()
     var tv:UITextView! = nil
     var cBuffer:MTLBuffer! = nil
     var outTextureL: MTLTexture!
@@ -170,7 +170,7 @@ class ViewController: UIViewController, WGDelegate {
             
         case .ShowBalls : control.ShowBalls = !control.ShowBalls; updateImage()
         case .DoInversion : control.DoInversion = !control.DoInversion; updateImage()
-        case .FourGen : control.FourGen = !control.FourGen; updateImage()
+        case .FourGen : control.FourGen = !control.FourGen; updateImage()            
         default : break
         }
         
