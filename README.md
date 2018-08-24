@@ -22,7 +22,7 @@ Two new funcs and a list of Strings.
    It checks whether any saves exist.  
    If not, then this is a new install, so access the base64 list to Save the datasets to the users' sandbox.
    
-4. Simple and automated, and easy to paste into all the other apps..
+4. Simple and automated, and easy to paste into all the other apps.. \
 Update ---------------------------------- 
 
 ![Screenshot](screenshot.png)
