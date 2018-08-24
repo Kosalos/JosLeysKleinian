@@ -13,13 +13,16 @@ Added Default Recordings. \
 I have always faced this problem: What is the easiest way to provide a bunch of recorded datasets \
 along with the app? \
 This latest posting shows the method I chose: 
-1. Set the params to produce an image you like, then launch Save/Load, and press any 'Save' button. 
-2. In the console window of Xcode, some source code will be printed. 
-3. Copy/Paste that source code to ControlDisplay.swift, and add the function name to the \
-   defaultRecordingsList[] array at the bottom of file. 
+
+Two new funcs and a list of Strings.
+1. You set a breakpoint in the code, alter a variable value, then continue to call a new routine that \
+   saves all dataset recordings as a list of base64 strings, and prints this list to the console window.
+2. Copy/Paste that source code to SaveLoadViewController.swift \
+3. The second new routine is called when the Save/load dialog is loaded.
+   It checks whether any saves exist.  
+   If not, then this is a new install, so access the base64 list to Save the datasets to the users' sandbox.
    
-How to access these 'default recordings': \
-Press the 'Default' button on the upper left of Save/Load popover to display the list of recordings you saved. \
+4. Simple and automated, and easy to paste into all the other apps..
 Update ---------------------------------- 
 
 ![Screenshot](screenshot.png)
