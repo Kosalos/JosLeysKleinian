@@ -139,7 +139,7 @@
                                                         <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </state>
                                                     <connections>
-                                                        <action selector="buttonTapped:" destination="XKy-ra-BmS" eventType="touchUpInside" id="DoP-hI-lQV"/>
+                                                        <action selector="buttonTapped:" destination="XKy-ra-BmS" eventType="touchUpInside" id="fQo-0p-Pp7"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
@@ -148,7 +148,7 @@
                                                 <constraint firstItem="UZq-6A-MRc" firstAttribute="leading" secondItem="fcL-5w-6kH" secondAttribute="leadingMargin" constant="-13" id="1Vs-dq-xRW"/>
                                                 <constraint firstItem="UZq-6A-MRc" firstAttribute="top" secondItem="fcL-5w-6kH" secondAttribute="topMargin" constant="-5" id="Dr0-oy-cRq"/>
                                                 <constraint firstItem="UZq-6A-MRc" firstAttribute="baseline" secondItem="Ufx-IT-ja3" secondAttribute="firstBaseline" constant="1.5" id="HAQ-DG-fYd"/>
-                                                <constraint firstItem="Ufx-IT-ja3" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="UZq-6A-MRc" secondAttribute="trailing" symbolic="YES" id="Lbl-NF-np0"/>
+                                                <constraint firstItem="Ufx-IT-ja3" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="UZq-6A-MRc" secondAttribute="trailing" constant="8" symbolic="YES" id="Lbl-NF-np0"/>
                                                 <constraint firstItem="Ufx-IT-ja3" firstAttribute="baseline" secondItem="UZq-6A-MRc" secondAttribute="firstBaseline" constant="-1.5" id="NNO-f4-kY6"/>
                                                 <constraint firstItem="UZq-6A-MRc" firstAttribute="top" secondItem="Ufx-IT-ja3" secondAttribute="top" id="aBJ-jd-i7t"/>
                                                 <constraint firstItem="UZq-6A-MRc" firstAttribute="bottom" secondItem="fcL-5w-6kH" secondAttribute="bottomMargin" constant="3" id="rOP-3M-m4p"/>
@@ -157,7 +157,6 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="loadCell" destination="UZq-6A-MRc" id="zbM-B2-Rj2"/>
-                                            <outlet property="saveButton" destination="Ufx-IT-ja3" id="vgC-ur-Ftp"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -168,27 +167,16 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yRU-zK-fdP">
-                                <rect key="frame" x="328" y="22" width="55" height="33"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <state key="normal" title="Default"/>
-                                <connections>
-                                    <action selector="defaultButtonPressed:" destination="IYT-Gi-YRN" eventType="touchUpInside" id="VPS-Bi-Nm1"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.1223958433" green="0.1223958433" blue="0.1223958433" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
                             <constraint firstItem="QOV-Ux-k8R" firstAttribute="top" secondItem="tdf-xW-8Km" secondAttribute="bottom" constant="8" id="DpC-bj-gH2"/>
-                            <constraint firstItem="yRU-zK-fdP" firstAttribute="bottom" secondItem="88o-Aa-C50" secondAttribute="bottom" constant="6" id="Lzc-9Y-god"/>
                             <constraint firstItem="88o-Aa-C50" firstAttribute="top" secondItem="YOC-hq-7i4" secondAttribute="bottom" constant="8" id="NyX-7l-VsK"/>
                             <constraint firstAttribute="trailing" secondItem="tdf-xW-8Km" secondAttribute="trailing" constant="14" id="OO0-EN-FqZ"/>
                             <constraint firstItem="tdf-xW-8Km" firstAttribute="leading" secondItem="Jf7-hc-17i" secondAttribute="leading" constant="13" id="bcK-67-cLg"/>
                             <constraint firstItem="88o-Aa-C50" firstAttribute="leading" secondItem="Jf7-hc-17i" secondAttribute="leading" constant="13" id="fDx-PK-hSa"/>
-                            <constraint firstAttribute="trailing" secondItem="yRU-zK-fdP" secondAttribute="trailing" constant="17" id="gya-XJ-wTO"/>
                             <constraint firstAttribute="trailing" secondItem="88o-Aa-C50" secondAttribute="trailing" constant="96" id="ph2-9Z-Jko"/>
                             <constraint firstItem="tdf-xW-8Km" firstAttribute="top" secondItem="88o-Aa-C50" secondAttribute="bottom" constant="5" id="rvn-VN-lcl"/>
-                            <constraint firstItem="yRU-zK-fdP" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="88o-Aa-C50" secondAttribute="trailing" symbolic="YES" id="xzn-sF-PmB"/>
                         </constraints>
                     </view>
                     <value key="contentSizeForViewInPopover" type="size" width="400" height="600"/>
