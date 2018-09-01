@@ -6,8 +6,6 @@ http://www.fractalforums.com/3d-fractal-generation/an-escape-tim-algorithm-for-k
 
 This app is an iPad rendition of "Kleinian_Jos_001.frag"  linked on that page.
 
-Too lazy to write a help page.  Please refer to the Help page of my MandelBox2 app.
-
 Update ---------------------------------- \
 Added Default Recordings. \
 I have always faced this problem: What is the easiest way to provide a bunch of recorded datasets \
@@ -23,6 +21,12 @@ Two new funcs and a list of Strings.
    If not, then this is a new install, so access the base64 list to Save the datasets to the users' sandbox.
    
 4. Simple and automated, and easy to paste into all the other apps.. 
+
+Update ---------------------------------- \
+Added Rotate: Object automatically rotates for better viewing. \
+Added Morph: Selected params automatically cycle. \
+Added Stereo: My old favorite cross-eyed stereo viewing. \
+Added Help: Short summary of the the widgets.
 
 ![Screenshot](screenshot.png)
 ![Screenshot](screenshot2.png)
