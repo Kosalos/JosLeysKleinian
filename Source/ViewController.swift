@@ -3,12 +3,14 @@ import Metal
 import simd
 
 var control = Control()
+var boundsData = BoundsData()
 var vc:ViewController! = nil
 
 class ViewController: UIViewController, WGDelegate {
     var aData = ArcBallData()
     var tv:UITextView! = nil
     var cBuffer:MTLBuffer! = nil
+    var bBuffer:MTLBuffer! = nil
     var outTextureL: MTLTexture!
     var outTextureR: MTLTexture!
     var pipeline1: MTLComputePipelineState!
@@ -16,8 +18,10 @@ class ViewController: UIViewController, WGDelegate {
     lazy var commandQueue: MTLCommandQueue! = { return device.makeCommandQueue() }()
     var isStereo:Bool = false
     var isHighRes:Bool = false
+    var isRotate:Bool = false
+    var isMorph:Bool = false
     var showControl:Bool = false
-
+    
     let threadGroupCount = MTLSizeMake(20,20, 1)
     var threadGroups = MTLSize()
     
@@ -28,7 +32,7 @@ class ViewController: UIViewController, WGDelegate {
     @IBOutlet var cTranslate: CTranslate!
     @IBOutlet var cTranslateZ: CTranslateZ!
     @IBOutlet var parallax: Widget!
-
+    
     override var prefersStatusBarHidden: Bool { return true }
     
     //MARK: -
@@ -36,7 +40,7 @@ class ViewController: UIViewController, WGDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         vc = self
-
+        
         tv = UITextView()
         tv.backgroundColor = .clear
         tv.textColor = .white
@@ -47,8 +51,9 @@ class ViewController: UIViewController, WGDelegate {
         tv.isUserInteractionEnabled = false
         view.addSubview(tv)
         view.bringSubview(toFront:tv)
-
+        
         cBuffer = device.makeBuffer(bytes: &control, length: MemoryLayout<Control>.stride, options: MTLResourceOptions.storageModeShared)
+        bBuffer = device.makeBuffer(bytes: &boundsData, length: MemoryLayout<BoundsData>.stride, options: MTLResourceOptions.storageModeShared)
         
         do {
             let defaultLibrary:MTLLibrary! = device.makeDefaultLibrary()
@@ -64,13 +69,13 @@ class ViewController: UIViewController, WGDelegate {
         let parallaxRange:Float = 0.08
         parallax.initSingle(&control.parallax,  -parallaxRange,+parallaxRange,0.0002, "Parallax")
         parallax.highlight(0)
-
+        
         for w in [ cTranslate,cTranslateZ,cRotate,parallax ] as [Any] { view.bringSubview(toFront:w as! UIView) }
-
+        
         let tap2 = UITapGestureRecognizer(target: self, action: #selector(self.tap2Gesture(_:)))
         tap2.numberOfTapsRequired = 2
         view.addGestureRecognizer(tap2)
-
+        
         let swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(self.swipeWgGesture(gesture:)))
         swipeUp.direction = .up
         wg.addGestureRecognizer(swipeUp)
@@ -99,130 +104,195 @@ class ViewController: UIViewController, WGDelegate {
     
     //MARK: -
     
-    let tResolution = #line // collection of unique integers
-    let tJulia = #line
-    let tBurningShip = #line
-    let tStereo = #line
-    let tRecord = #line
-    let tSpeed = #line
-    let tPlayback = #line
-    
     func initializeWidgetGroup() {
         wg.reset()
-        wg.addToggle(tResolution)
+        wg.addToggle(.resolution)
         wg.addLine()
-        wg.addSingleFloat(&control.zoom,  0.2,2, 0.03, "Zoom",.refresh)
+        wg.addSingleFloat(&control.zoom,  0.2,2, 0.03, "Zoom")
         
         wg.addLine()
-        wg.addSingleFloat(&control.fMaxSteps,10,300,10, "Max Steps",.refresh)
-        wg.addSingleFloat(&control.fFinal_Iterations, 1,50,1, "FinalIter",.refresh)
-        wg.addSingleFloat(&control.fBox_Iterations, 1,50,1, "BoxIter",.refresh)
+        wg.addSingleFloat(&control.fMaxSteps,10,300,10, "Max Steps")
+        wg.addSingleFloat(&control.fFinal_Iterations, 1,50,1, "FinalIter")
+        wg.addSingleFloat(&control.fBox_Iterations, 1,50,1, "BoxIter")
         wg.addLine()
-        wg.addColor(1,Float(RowHT))
-        wg.addCommand("ShowBalls",.ShowBalls)
-        wg.addColor(2,Float(RowHT))
-        wg.addCommand("DoInversion",.DoInversion)
-        wg.addColor(3,Float(RowHT))
-        wg.addCommand("FourGen",.FourGen)
+        wg.addColoredCommand(.showBalls,"ShowBalls")
+        wg.addColoredCommand(.doInversion,"DoInversion")
+        wg.addColoredCommand(.fourGen,"FourGen")
         wg.addLine()
-        wg.addSingleFloat(&control.Clamp_y, 0.001,2,0.1, "Clamp_y",.refresh)
-        wg.addSingleFloat(&control.Clamp_DF, 0.001,2,0.3, "Clamp_DF",.refresh)
-        wg.addSingleFloat(&control.box_size_x, 0.01,2,0.3, "box_size_x",.refresh)
-        wg.addSingleFloat(&control.box_size_z, 0.01,2,0.3, "box_size_z",.refresh)
+        wg.addSingleFloat(&control.Clamp_y, 0.001,2,0.1, "Clamp_y")
+        wg.addSingleFloat(&control.Clamp_DF, 0.001,2,0.3, "Clamp_DF")
+        wg.addSingleFloat(&control.box_size_x, 0.01,2,0.3, "box_size_x")
+        wg.addSingleFloat(&control.box_size_z, 0.01,2,0.3, "box_size_z")
         wg.addLine()
-        wg.addSingleFloat(&control.KleinR, 0.01,2.5,0.3, "KleinR",.refresh)
-        wg.addSingleFloat(&control.KleinI, 0.01,2.5,0.3, "KleinI",.refresh)
-
-        wg.addTriplet(&control.InvCenter,0,1.5,0.2,"InvCenter",.refresh)
-
-        wg.addSingleFloat(&control.DeltaAngle, 0.1,10,0.1, "DeltaAngle",.refresh)
-        wg.addSingleFloat(&control.InvRadius, 0.01,2,0.3, "InvRadius",.refresh)
-        wg.addSingleFloat(&control.deScale, 0.01,2,0.5, "DE Scale",.refresh)
-
-        wg.addSingleFloat(&control.epsilon, 0.00001, 0.05, 0.01, "epsilon",.refresh)
-        wg.addSingleFloat(&control.normalEpsilon, 0.00001, 0.04, 0.002, "N epsilon",.refresh)
+        wg.addSingleFloat(&control.KleinR, 0.01,2.5,0.3, "KleinR")
+        wg.addSingleFloat(&control.KleinI, 0.01,2.5,0.3, "KleinI")
+        
+        wg.addTriplet(&control.InvCenter,0,1.5,0.2,"InvCenter")
+        
+        wg.addSingleFloat(&control.DeltaAngle, 0.1,10,0.1, "DeltaAngle")
+        wg.addSingleFloat(&control.InvRadius, 0.01,2,0.3, "InvRadius")
+        wg.addSingleFloat(&control.deScale, 0.01,2,0.5, "DE Scale")
+        
+        wg.addSingleFloat(&control.epsilon, 0.00001, 0.05, 0.01, "epsilon")
+        wg.addSingleFloat(&control.normalEpsilon, 0.00001, 0.04, 0.002, "N epsilon")
         wg.addLine()
         let sPmin:Float = 0.01
         let sPmax:Float = 1
         let sPchg:Float = 0.25
-        wg.addSingleFloat(&control.lighting.diffuse,sPmin,sPmax,sPchg, "Bright",.refresh)
-        wg.addSingleFloat(&control.lighting.specular,sPmin,sPmax,sPchg, "Shiny",.refresh)
-        wg.addTriplet(&control.lighting.position,-10,10,3,"Light",.refresh)
-        wg.addTriplet(&control.color,0,0.5,0.2,"Tint",.refresh)
+        wg.addSingleFloat(&control.lighting.diffuse,sPmin,sPmax,sPchg, "Bright")
+        wg.addSingleFloat(&control.lighting.specular,sPmin,sPmax,sPchg, "Shiny")
+        wg.addTriplet(&control.lighting.position,-10,10,3,"Light")
+        wg.addTriplet(&control.color,0,0.5,0.2,"Tint")
         
         wg.addCommand("Save/Load",.saveLoad)
         wg.addCommand("Reset",.reset)
+        wg.addColoredCommand(.stereo,"Stereo")
+        wg.addColoredCommand(.rotate,"Rotate")
+        wg.addColoredCommand(.morph,"Morph")
         wg.addCommand("Show Params",.controlDisplay)
+        wg.addCommand("Help",.help)
     }
     
     //MARK: -
     
-    func wgCommand(_ cmd: CmdIdent) {
-        switch(cmd) {
+    func wgCommand(_ ident:WgIdent) {
+        switch(ident) {
         case .controlDisplay :
             tv.isHidden = !tv.isHidden
             controlDisplay()
         case .saveLoad :
             saveLoadStyle = .settings
             performSegue(withIdentifier: "saveLoadSegue", sender: self)
-        case .reset :
-            reset()
-            
-        case .ShowBalls : control.ShowBalls = !control.ShowBalls; updateImage()
-        case .DoInversion : control.DoInversion = !control.DoInversion; updateImage()
-        case .FourGen : control.FourGen = !control.FourGen; updateImage()            
+        case .help :
+            performSegue(withIdentifier: "helpSegue", sender: self)
+        case .reset : reset()
+        case .showBalls : control.showBalls = !control.showBalls; updateImage()
+        case .doInversion : control.doInversion = !control.doInversion; updateImage()
+        case .fourGen : control.fourGen = !control.fourGen; updateImage()
+        case .stereo :
+            isStereo = !isStereo
+            layoutViews()
+        case .rotate :
+            isRotate = !isRotate
+            initializeObjectCenterDataset()
+        case .morph : isMorph = !isMorph
         default : break
         }
         
         wg.setNeedsDisplay()
     }
     
-    func wgToggle(_ ident:Int) {
+    func wgToggle(_ ident:WgIdent) {
         switch(ident) {
-        case tResolution :
+        case .resolution :
             isHighRes = !isHighRes
             setImageViewResolution()
             updateImage()
+        case .stereo :
+            isStereo = !isStereo
+            layoutViews()
+            updateImage()
+        case .morph :
+            isMorph = !isMorph
+        case .rotate :
+            isRotate = !isRotate
         default : break
         }
         
         wg.setNeedsDisplay()
     }
     
-    func wgGetString(_ index: Int) -> String {
+    func wgGetString(_ index: WgIdent) -> String {
         switch index {
-        case tResolution :
+        case .resolution :
             return isHighRes ? "Res: High" : "Res: Low"
         default : return ""
         }
     }
-
-    func wgGetColor(_ index: Int) -> UIColor {
+    
+    func wgGetColor(_ index: WgIdent) -> UIColor {
         var highlight:Bool = false
         switch(index) {
-        case 1 : highlight = control.ShowBalls
-        case 2 : highlight = control.DoInversion
-        case 3 : highlight = control.FourGen
+        case .showBalls : highlight = control.showBalls
+        case .doInversion : highlight = control.doInversion
+        case .fourGen : highlight = control.fourGen
+        case .stereo : highlight = isStereo
+        case .rotate : highlight = isRotate
+        case .morph : highlight = isMorph
         default : break
         }
-
+        
         if highlight { return UIColor(red:0.2, green:0.2, blue:0, alpha:1) }
         return .black
     }
     
-    func wgOptionSelected(_ ident: Int, _ index: Int) {
+    func wgOptionSelected(_ ident: WgIdent, _ index: Int) {
         switch ident {
-        //      case 1 : control.formula = Int32(index)
         default : break
         }
-        
-        //        updateImage()
     }
     
-    func wgGetOptionString(_ ident: Int) -> String {
+    func wgGetOptionString(_ ident: WgIdent) -> String {
         switch ident {
-        //        case 1 : return fOptions[Int(control.formula)]
         default : return "noOption"
+        }
+    }
+    
+    //MARK: -
+    
+    var rotateAngle = float2()
+    var rotateDistance = float3()
+    var rawAverageObjectCenter = float3()
+    var smoothedAverageObjectCenter = float3()
+
+    func initializeObjectCenterDataset() {
+        smoothedAverageObjectCenter = rawAverageObjectCenter
+        rotateAngle = float2()
+        rotateDistance = control.camera * 2
+    }
+    
+    func updateRotatePosition() {
+        func rotatePos(_ old:float3, _ rX:Float, _ rY:Float) -> float3 {
+            var pos = old
+            
+            if rX != 0 {    // X/Y rotation
+                let ss = sinf(rX)
+                let cc = cosf(rX)
+                let qt = pos.x
+                pos.x = pos.x * cc - pos.y * ss
+                pos.y = qt * ss + pos.y * cc
+            }
+            
+            if rY != 0 {    // X/Z rotation
+                let ss = sinf(rY)
+                let cc = cosf(rY)
+                let qt = pos.x
+                pos.x = pos.x * cc - pos.z * ss
+                pos.z = qt * ss + pos.z * cc
+            }
+            
+            return pos
+        }
+
+        // slowly move center towards latest calculated position
+        smoothedAverageObjectCenter += (rawAverageObjectCenter - smoothedAverageObjectCenter) / 50
+        
+        control.camera = smoothedAverageObjectCenter - rotatePos(rotateDistance, rotateAngle.x, rotateAngle.y)
+        control.focus  = smoothedAverageObjectCenter
+        
+        rotateAngle += float2(0.01,0.013)
+    }
+    
+    //MARK: -
+    
+    var morphAngle:Float = 0
+    
+    func updateMorph() {
+        let s = sin(morphAngle) * 0.003
+        morphAngle += 0.01
+        
+        for i in 0 ..< wg.data.count {
+            wg.morph(i,s)
         }
     }
     
@@ -236,6 +306,16 @@ class ViewController: UIViewController, WGDelegate {
         if parallax.update() { refresh = true }
         if wg.update() { refresh = true }
         
+        if isRotate {
+            refresh = true
+            updateRotatePosition()
+        }
+        
+        if isMorph {
+            refresh = true
+            updateMorph()
+        }
+        
         if refresh && !isBusy {
             if !tv.isHidden { controlDisplay() }
             updateImage()
@@ -246,42 +326,42 @@ class ViewController: UIViewController, WGDelegate {
     
     func reset() {
         isHighRes = false
-
+        
         control.camera = vector_float3(-0.168532, 1.38868, -1.42637)
         control.focus = vector_float3(-0.168515, 1.36687, -1.3299)
-
+        
         control.zoom = 0.6141
         control.epsilon = 0.00166499999
         control.normalEpsilon = 0.000232000006
-
+        
         control.lighting.position = float3(-10.0, 0.6645, 1.6055)
         control.lighting.diffuse = 0.653
         control.lighting.specular = 0.820
-
+        
         control.color = float3(0.7)
         control.parallax = 0.0011
-        control.fog = 8         // max distance
+        control.fog = 180         // max distance
         
         control.fMaxSteps = 70
         control.fFinal_Iterations = 21
         control.fBox_Iterations = 17
-
-        control.ShowBalls = false
-        control.DoInversion = true
-        control.FourGen = false
+        
+        control.showBalls = false
+        control.doInversion = true
+        control.fourGen = false
         control.Clamp_y = 0.221299887
         control.Clamp_DF = 0.00999999977
         control.box_size_z = 1.98095
         control.box_size_x = 0.934900045
         control.KleinR = 1.9324
         control.KleinI = 0.04583
-
+        
         control.InvCenter = float3(0.0, 1.0294, 0.1879)
         control.ReCenter = float3(0.0, 0.0, 0.1468)
         control.DeltaAngle = 5.5392437
         control.InvRadius = 0.496100187
         control.deScale = 0.565749943
-
+        
         aData.endPosition = simd_float3x3([-0.713134, -0.670681, -0.147344], [0.000170747, -0.218116, 0.964759], [-0.683193, 0.68709, 0.152579])
         aData.transformMatrix = simd_float4x4([-0.713134, -0.670681, -0.147344, 0.0], [0.000170747, -0.218116, 0.964759, 0.0], [-0.683193, 0.68709, 0.152579, 0.0], [0.0, 0.0, 0.0, 1.0])
         
@@ -290,10 +370,12 @@ class ViewController: UIViewController, WGDelegate {
     }
     
     //MARK: -
-
+    
     func controlJustLoaded() {
         aData = control.aData
+        isHighRes = false
         wg.setNeedsDisplay()
+        setImageViewResolution()
         updateImage()
     }
     
@@ -350,7 +432,7 @@ class ViewController: UIViewController, WGDelegate {
         var xBase = CGFloat()
         let xs = view.bounds.width
         let ys = view.bounds.height
-
+        
         if !wg.isHidden {
             xBase = 160
             wg.frame = CGRect(x:0, y:0, width:xBase, height:ys)
@@ -359,7 +441,7 @@ class ViewController: UIViewController, WGDelegate {
         if isStereo {
             metalTextureViewR.isHidden = false
             parallax.isHidden = false
-
+            
             let xs2:CGFloat = (xs - xBase)/2
             metalTextureViewL.frame = CGRect(x:xBase, y:0, width:xs2, height:ys)
             metalTextureViewR.frame = CGRect(x:xBase+xs2+1, y:0, width:xs2, height:ys) // +1 = 1 pixel of bkground between
@@ -369,11 +451,11 @@ class ViewController: UIViewController, WGDelegate {
             parallax.isHidden = true
             metalTextureViewL.frame = CGRect(x:xBase, y:0, width:xs-xBase, height:ys)
         }
-
+        
         // --------------------------------------------
         var x:CGFloat = xBase + 10
         var y:CGFloat = ys - 100
-
+        
         func frame(_ xs:CGFloat, _ ys:CGFloat, _ dx:CGFloat, _ dy:CGFloat) -> CGRect {
             let r = CGRect(x:x, y:y, width:xs, height:ys)
             x += dx; y += dy
@@ -397,6 +479,12 @@ class ViewController: UIViewController, WGDelegate {
     //MARK: -
     
     func alterAngle(_ dx:Float, _ dy:Float) {
+        if isRotate {
+            let amt:Float = dx > 0 ? 0.95 : 1.05
+            rotateDistance *= amt
+            return
+        }
+        
         let center:CGFloat = cRotate.bounds.width/2
         arcBall.mouseDown(CGPoint(x: center, y: center))
         arcBall.mouseMove(CGPoint(x: center + CGFloat(dx/50), y: center + CGFloat(dy/50)))
@@ -424,6 +512,13 @@ class ViewController: UIViewController, WGDelegate {
             
             alter(&control.camera)
             alter(&control.focus)
+        }
+        
+        if isRotate {
+            smoothedAverageObjectCenter.x += dx / 500
+            smoothedAverageObjectCenter.y += dy / 500
+            smoothedAverageObjectCenter.z += dz / 500
+            return
         }
         
         let q:Float = 0.1
@@ -472,6 +567,10 @@ class ViewController: UIViewController, WGDelegate {
             metalTextureViewR.display(metalTextureViewR.layer)
         }
         
+        // update objects' average position
+        memcpy(&boundsData,bBuffer.contents(),MemoryLayout<BoundsData>.stride)
+        rawAverageObjectCenter = boundsData.position / Float(boundsData.count)
+        
         isBusy = false
     }
     
@@ -485,12 +584,17 @@ class ViewController: UIViewController, WGDelegate {
         
         cBuffer.contents().copyMemory(from: &c, byteCount:MemoryLayout<Control>.stride)
         
+        boundsData.position = float3()  // reset object's position accumulator fields
+        boundsData.count = 0
+        bBuffer.contents().copyMemory(from: &boundsData, byteCount:MemoryLayout<BoundsData>.stride)
+        
         let commandBuffer = commandQueue.makeCommandBuffer()!
         let commandEncoder = commandBuffer.makeComputeCommandEncoder()!
         
         commandEncoder.setComputePipelineState(pipeline1)
         commandEncoder.setTexture(who == 0 ? outTextureL : outTextureR, index: 0)
         commandEncoder.setBuffer(cBuffer, offset: 0, index: 0)
+        commandEncoder.setBuffer(bBuffer, offset: 0, index: 1)
         commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCount)
         commandEncoder.endEncoding()
         

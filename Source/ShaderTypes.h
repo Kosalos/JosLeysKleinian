@@ -23,6 +23,11 @@ typedef struct {
 } Lighting;
 
 typedef struct {
+    vector_float3 position;
+    float count;
+} BoundsData;
+
+typedef struct {
     int version;
     vector_float3 camera;
     vector_float3 focus;
@@ -46,9 +51,9 @@ typedef struct {
     float fFinal_Iterations;
     float fBox_Iterations;
     float fMaxSteps;
-    bool ShowBalls;
-    bool DoInversion;
-    bool FourGen;
+    bool showBalls;
+    bool doInversion;
+    bool fourGen;
 
     float Clamp_y;
     float Clamp_DF;
@@ -62,37 +67,5 @@ typedef struct {
     
     float DeltaAngle;
     float InvRadius;
-    float deScale;
-    
+    float deScale;    
 }  Control;
-
-//MARK: -
-
-#define MAX_ENTRY 100
-
-typedef struct{
-    vector_float3 camera;
-    vector_float3 focus;
-    float parallax;
-    ArcBallData aData;
-} RecordEntry;
-
-typedef struct{
-    int version;
-    Control memory;
-    int count;
-    RecordEntry entry[MAX_ENTRY];
-} RecordStruct;
-
-#ifndef __METAL_VERSION__
-
-extern ArcBallData aData;
-
-void setRecordPointer(RecordStruct *rPtr,Control *cPtr);
-void saveControlMemory(void);
-void restoreControlMemory(void);
-void saveRecordStructEntry(void);
-RecordEntry getRecordStructEntry(int index);
-
-#endif
-

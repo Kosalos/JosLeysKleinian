@@ -1,30 +1,29 @@
 import UIKit
 
 protocol WGDelegate {
-    func wgCommand(_ cmd:CmdIdent)
-    func wgToggle(_ ident:Int)
-    func wgGetString(_ index:Int) -> String
-    func wgGetColor(_ index:Int) -> UIColor
-    func wgOptionSelected(_ ident:Int, _ index:Int)
-    func wgGetOptionString(_ ident:Int) -> String
+    func wgCommand(_ ident:WgIdent)
+    func wgToggle(_ ident:WgIdent)
+    func wgGetString(_ ident:WgIdent) -> String
+    func wgGetColor(_ ident:WgIdent) -> UIColor
+    func wgOptionSelected(_ ident:WgIdent, _ index:Int)
+    func wgGetOptionString(_ ident:WgIdent) -> String
 }
 
 enum WgEntryKind { case singleFloat,dualFloat,dropDown,option,command,toggle,legend,line,string,color,move,gap,float3Dual,float3Single }
-enum CmdIdent { case none,refresh,reset,saveLoad,recSaveLoad,help,stereo,playBack, ShowBalls,DoInversion,FourGen,controlDisplay }
+enum WgIdent { case none,resolution,morph,rotate,stereo,showBalls,doInversion,fourGen,saveLoad,reset,controlDisplay,help }
 
 let NONE:Int = -1
 let FontSZ:CGFloat = 20
-let RowHT:CGFloat = 24
-let GrphSZ:CGFloat = 20
-let TxtYoff:CGFloat = 0
+let RowHT:CGFloat = 21
+let GrphSZ:CGFloat = RowHT - 4
+let TxtYoff:CGFloat = -3
 let Tab1:CGFloat = 5     // graph x1
 let Tab2:CGFloat = 24    // text after graph
 var py = CGFloat()
 
 struct wgEntryData {
     var kind:WgEntryKind = .legend
-    var index:Int = 0
-    var cmd:CmdIdent = .help
+    var ident:WgIdent = .none
     var str:[String] = []
     var valuePointerX:UnsafeMutableRawPointer! = nil
     var valuePointerY:UnsafeMutableRawPointer! = nil
@@ -113,9 +112,37 @@ class WidgetGroup: UIView {
     func hasFocus() -> Bool { return focus != NONE }
     func removeAllFocus() { focus = NONE; setNeedsDisplay() }
     
-    func wgOptionSelected(_ ident:Int, _ index:Int) {
+    func wgOptionSelected(_ ident:WgIdent, _ index:Int) {
         delegate?.wgOptionSelected(ident,index)
         setNeedsDisplay()
+    }
+    
+    func morph(_ index:Int, _ amt:Float) {
+        func morphFloat3Value() -> float3 { return data[index].valuePointerX.load(as: float3.self) }
+
+        if data[index].fastEdit { return }
+        
+        switch(data[index].kind) {
+        case .singleFloat :
+            let valueX = fClamp2(data[index].getFloatValue(0) + amt, data[index].mRange)
+            data[index].valuePointerX.storeBytes(of:valueX, as:Float.self)
+            
+            if data[index].kind == .dualFloat {
+                let valueY = fClamp2(data[index].getFloatValue(1) + amt, data[index].mRange)
+                data[index].valuePointerY.storeBytes(of:valueY, as:Float.self)
+            }
+            
+        case .float3Dual :   // hardwired to .xy fields of float3
+            var v:float3 = morphFloat3Value()
+            v.x = fClamp2(v.x + amt, data[index].mRange)
+            v.y = fClamp2(v.y + amt, data[index].mRange)
+            data[index].valuePointerX.storeBytes(of:v, as:float3.self)
+        case .float3Single :  // hardwired to .z field of float3
+            var v:float3 = morphFloat3Value()
+            v.z = fClamp2(v.z + amt, data[index].mRange)
+            data[index].valuePointerX.storeBytes(of:v, as:float3.self)
+        default : break
+        }
     }
     
     //MARK:-
@@ -129,21 +156,21 @@ class WidgetGroup: UIView {
         data[dIndex].kind = nKind
     }
     
-    func addCommon(_ ddIndex:Int, _ min:Float, _ max:Float, _ delta:Float, _ iname:String,_ nCmd:CmdIdent) {
+    func addCommon(_ ddIndex:Int, _ min:Float, _ max:Float, _ delta:Float, _ iname:String,_ nCmd:WgIdent) {
         data[ddIndex].mRange.x = min
         data[ddIndex].mRange.y = max
         data[ddIndex].deltaValue = delta
-        data[dIndex].cmd = nCmd
+        data[dIndex].ident = nCmd
         data[ddIndex].str.append(iname)
     }
     
-    func addSingleFloat(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:CmdIdent = .none) {
+    func addSingleFloat(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:WgIdent = .none) {
         newEntry(.singleFloat)
         data[dIndex].valuePointerX = vx
         addCommon(dIndex,min,max,delta,iname,nCmd)
     }
     
-    func addDualFloat(_ vx:UnsafeMutableRawPointer, _ vy:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:CmdIdent = .none) {
+    func addDualFloat(_ vx:UnsafeMutableRawPointer, _ vy:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:WgIdent = .none) {
         newEntry(.dualFloat)
         data[dIndex].valuePointerX = vx
         data[dIndex].valuePointerY = vy
@@ -152,19 +179,19 @@ class WidgetGroup: UIView {
 
     //MARK:-
     
-    func addFloat3Dual(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:CmdIdent = .none) {
+    func addFloat3Dual(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:WgIdent = .none) {
         newEntry(.float3Dual)
         data[dIndex].valuePointerX = vx
         addCommon(dIndex,min,max,delta,iname,nCmd)
     }
 
-    func addFloat3Single(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:CmdIdent = .none) {
+    func addFloat3Single(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:WgIdent = .none) {
         newEntry(.float3Single)
         data[dIndex].valuePointerX = vx
         addCommon(dIndex,min,max,delta,iname,nCmd)
     }
 
-    func addTriplet(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:CmdIdent = .none) {
+    func addTriplet(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:WgIdent = .none) {
         addFloat3Dual  (vx, min,max,delta, iname + "XY", nCmd)
         addFloat3Single(vx, min,max,delta, iname + "Z", nCmd)
         addLine()
@@ -183,9 +210,9 @@ class WidgetGroup: UIView {
         data[dIndex].str.append(iname)
     }
     
-    func addToggle(_ ident:Int) {
+    func addToggle(_ ident:WgIdent) {
         newEntry(.toggle)
-        data[dIndex].index = ident
+        data[dIndex].ident = ident
     }
     
     func addLine() {
@@ -197,27 +224,32 @@ class WidgetGroup: UIView {
         data[dIndex].str.append("Move")
     }
     
-    func addCommand(_ iname:String, _ ncmd:CmdIdent) {
+    func addCommand(_ iname:String, _ ident:WgIdent) {
         newEntry(.command)
         data[dIndex].str.append(iname)
-        data[dIndex].cmd = ncmd
+        data[dIndex].ident = ident
     }
     
-    func addString(_ iname:String, _ cNumber:Int) {
+    func addColoredCommand(_ nCmd:WgIdent, _ legend:String) {
+        addColor(nCmd,Float(RowHT))
+        addCommand(legend,nCmd)
+    }
+    
+    func addString(_ iname:String, _ cNumber:WgIdent) {
         newEntry(.string)
         data[dIndex].str.append(iname)
-        data[dIndex].index = cNumber
+        data[dIndex].ident = cNumber
     }
     
-    func addColor(_ index:Int, _ height:Float) {
+    func addColor(_ index:WgIdent, _ height:Float) {
         newEntry(.color)
-        data[dIndex].index = index
+        data[dIndex].ident = index
         data[dIndex].deltaValue = height
     }
     
-    func addOptionSelect(_ ident:Int, _ title:String, _ message:String, _ options:[String]) {
+    func addOptionSelect(_ ident:WgIdent, _ title:String, _ message:String, _ options:[String]) {
         newEntry(.option)
-        data[dIndex].index = ident
+        data[dIndex].ident = ident
         data[dIndex].str.append(title)
         data[dIndex].str.append(message)
         for i in 0 ..< options.count { data[dIndex].str.append(options[i]) }
@@ -278,10 +310,10 @@ class WidgetGroup: UIView {
             
         case .dropDown : drawText(Tab1,py+TxtYoff,tColor,FontSZ,data[index].str[data[index].getInt32Value()])
         case .command  : drawText(Tab1,py+TxtYoff,tColor,FontSZ,data[index].str[0])
-        case .string   : drawText(Tab1,py+TxtYoff,tColor,FontSZ, (delegate?.wgGetString(data[index].index))!)
-        case .toggle   : drawText(Tab1,py+TxtYoff,tColor,FontSZ, (delegate?.wgGetString(data[index].index))!)
+        case .string   : drawText(Tab1,py+TxtYoff,tColor,FontSZ, (delegate?.wgGetString(data[index].ident))!)
+        case .toggle   : drawText(Tab1,py+TxtYoff,tColor,FontSZ, (delegate?.wgGetString(data[index].ident))!)
         case .legend   : drawText(Tab1,py+TxtYoff,.yellow,FontSZ,data[index].str[0])
-        case .option   : drawText(Tab1,py+TxtYoff,tColor,FontSZ, (delegate?.wgGetOptionString(data[index].index))!)
+        case .option   : drawText(Tab1,py+TxtYoff,tColor,FontSZ, (delegate?.wgGetOptionString(data[index].ident))!)
 
         case .line :
             color.set()
@@ -290,7 +322,7 @@ class WidgetGroup: UIView {
             py -= RowHT - 5
             
         case .color :
-            let c = (delegate?.wgGetColor(data[index].index))!
+            let c = (delegate?.wgGetColor(data[index].ident))!
             c.setFill()
             let r = CGRect(x:1, y:py-3, width:bounds.width-2, height:CGFloat(data[index].deltaValue)+2)
             UIBezierPath(rect:r).fill()
@@ -303,7 +335,7 @@ class WidgetGroup: UIView {
         py += RowHT
     }
     
-    func baseYCoord() -> CGFloat { return 5 } 
+    func baseYCoord() -> CGFloat { return 2 }
     
     override func draw(_ rect: CGRect) {
         if vc == nil { return }
@@ -314,6 +346,8 @@ class WidgetGroup: UIView {
         
         color.setStroke()
         UIBezierPath(rect:bounds).stroke()
+        
+        drawHLine(context!,0,bounds.width,767) // bottom egde of small iPads (1024x768)
     }
     
     func nextYCoord() -> CGFloat {
@@ -366,7 +400,7 @@ class WidgetGroup: UIView {
             else { return false }
         }
         
-        delegate?.wgCommand(data[focus].cmd)
+        delegate?.wgCommand(data[focus].ident)
         setNeedsDisplay()
         return true
     }
@@ -403,10 +437,13 @@ class WidgetGroup: UIView {
             if fabs(dy) > fabs(dx) { dx = dy }
         }
         
-        if !data[focus].fastEdit {
-            let den = Float((data[focus].kind == .move) ? 10 : 100)
-            dx /= den
-            dy /= den
+        // if morphing then always use 'fast edit'
+        if !vc.isMorph {
+            if !data[focus].fastEdit {
+                let den = Float((data[focus].kind == .move) ? 10 : 100)
+                dx /= den
+                dy /= den
+            }
         }
         
         setNeedsDisplay()
@@ -414,7 +451,7 @@ class WidgetGroup: UIView {
     
     // MARK:
     
-    func optionSelectPopup(_ ident:Int, _ title:String, _ message:String, _ options:[String]) {
+    func optionSelectPopup(_ ident:WgIdent, _ title:String, _ message:String, _ options:[String]) {
         let alert = UIAlertController(title:title, message:message, preferredStyle: .actionSheet)
         
         func attrString(_ text:String, _ key:String) {
@@ -469,7 +506,7 @@ class WidgetGroup: UIView {
         if focus == NONE { return }
         
         if data[focus].kind == .command {
-            delegate?.wgCommand(data[focus].cmd)
+            delegate?.wgCommand(data[focus].ident)
             
             focus = NONE
             if previousFocus != NONE { focus = previousFocus }
@@ -479,7 +516,7 @@ class WidgetGroup: UIView {
         }
 
         if data[focus].kind == .toggle {
-            delegate?.wgToggle(data[focus].index)
+            delegate?.wgToggle(data[focus].ident)
             
             focus = NONE
             if previousFocus != NONE { focus = previousFocus }
@@ -490,7 +527,7 @@ class WidgetGroup: UIView {
 
         if data[focus].kind == .option {
             let p = data[focus]
-            optionSelectPopup(p.index, p.str[0], p.str[1], Array(p.str[2 ..< p.str.count]))
+            optionSelectPopup(p.ident, p.str[0], p.str[1], Array(p.str[2 ..< p.str.count]))
             setNeedsDisplay()
         }
         

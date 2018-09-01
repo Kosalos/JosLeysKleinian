@@ -49,7 +49,7 @@ float  JosKleinian(vec3 z,constant Control &control)
         //if(z.y<0. || z.y>a) break;
         
         z.x=z.x+b/a*z.y;
-        if (control.FourGen)
+        if (control.fourGen)
             z = wrap(z, vec3(2. * control.box_size_x, a, 2. * control.box_size_z), vec3(- control.box_size_x, 0., - control.box_size_z));
         else
             z.xz = wrap(z.xz, vec2(2. * control.box_size_x, 2. * control.box_size_z), vec2(- control.box_size_x, - control.box_size_z));
@@ -60,8 +60,6 @@ float  JosKleinian(vec3 z,constant Control &control)
             z = vec3(-b, a, 0.) - z;//
         //z.xy = vec2(-b, a) - z.xy;//
         
-  //zorro      orbitTrap = min(orbitTrap, abs(vec4(z,dot(z,z))));//For colouring
-        
         //Apply transformation a
         //TransA(&z, &DF, a, b);
         float iR = 1. / dot2(z);
@@ -69,12 +67,8 @@ float  JosKleinian(vec3 z,constant Control &control)
         z.x = -b - z.x; z.y = a + z.y;
         DF *= iR;//max(1.,iR);
 
-        
         //If the iterated points enters a 2-cycle , bail out.
         if(dot2(z-llz) < 1e-12) {
-#if 0
-            orbitTrap =vec4(1./float(i),0.,0.,0.);
-#endif
             break;
         }
         
@@ -85,7 +79,7 @@ float  JosKleinian(vec3 z,constant Control &control)
     //WIP: Push the iterated point left or right depending on the sign of KleinI
     for (int i=0;i<control.Final_Iterations;i++){
 
-        float y = control.ShowBalls ? min(z.y, a-z.y) : z.y;
+        float y = control.showBalls ? min(z.y, a-z.y) : z.y;
 
         DE = min(DE, min(y,control.Clamp_y) / max(DF,control.Clamp_DF));
         
@@ -97,7 +91,7 @@ float  JosKleinian(vec3 z,constant Control &control)
 
     }
     
-    float y = control.ShowBalls ? min(z.y, a-z.y) : z.y;
+    float y = control.showBalls ? min(z.y, a-z.y) : z.y;
     DE=min(DE,min(y,control.Clamp_y)/max(DF,control.Clamp_DF));
     
     return DE;
@@ -108,7 +102,7 @@ float DE    // distance estimate
  float3 p,
  constant Control &control)
 {
-    if(control.DoInversion){
+    if(control.doInversion){
         
         p=p-control.InvCenter-control.ReCenter;
         float r=length(p);
@@ -157,7 +151,7 @@ float3 lighting
     if(dotLN >= 0) {
         color += control.lighting.diffuse * dotLN;
         
-        float3 V = normalize(position); // float3(distance));   // <- using position = less color flickering as you mnavigate
+        float3 V = normalize(float3(distance)); // position); // float3(distance));   // <- using position = less color flickering as you navigate
         float3 R = normalize(reflect(-L, normal));
         float dotRV = dot(R, V);
         if(dotRV >= 0) color += control.lighting.specular * pow(dotRV, 2);
@@ -168,10 +162,13 @@ float3 lighting
 
 //MARK: -
 
+#define NULL 0
+
 float3 rayMarch
 (
  float3 rayDir,
- constant Control &control)
+ constant Control &control,
+ device BoundsData *boundsData)
 {
     float de,distance = 0.0;
     float3 position;
@@ -180,7 +177,15 @@ float3 rayMarch
         position = control.camera + rayDir * distance;
         
         de = DE(position, control);
-        if(de < control.epsilon) return lighting(position,distance,control);
+        if(de < control.epsilon) {
+            
+            if(boundsData != NULL) {
+                boundsData->position += position;
+                ++(boundsData->count);
+            }
+            
+            return lighting(position,distance,control);
+        }
         
         distance += de * control.deScale;
         if(distance > control.fog) return float3();
@@ -195,6 +200,7 @@ kernel void mandelBoxShader
 (
  texture2d<float, access::write> outTexture [[texture(0)]],
  constant Control &control [[buffer(0)]],
+ device BoundsData *boundsData [[buffer(1)]],   // average position of object hits
  uint2 p [[thread_position_in_grid]])
 {
     if(p.x > uint(control.xSize) || p.y > uint(control.ySize)) return;
@@ -205,5 +211,9 @@ kernel void mandelBoxShader
     
     float3 direction = normalize((control.sideVector * dx) + (control.topVector * dy) + control.viewVector);
     
-    outTexture.write(float4(rayMarch(direction,control),1),p);
+    // occasionally add ray hit position to objects' position accumulator dataset
+    device BoundsData *b = boundsData;
+    if(((p.x & 15) != 0) || (p.y & 15) != 0) b = NULL;
+    
+    outTexture.write(float4(rayMarch(direction,control,b),1),p);
 }

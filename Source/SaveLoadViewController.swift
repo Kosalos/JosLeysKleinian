@@ -81,7 +81,7 @@ class SaveLoadViewController: UIViewController,UITableViewDataSource, UITableVie
         legend.text = (saveLoadStyle == .settings) ? "Save/Load Settings" : "Save/Load Recordings"
 
         // ----------------------------------------
-        if control.fog > 100 {          // set breakpoint here, then in console:   expr control.fog = 999
+        if control.fog > 800 {          // set breakpoint here, then in console:   expr control.fog = 999
             savingsToSourceCode()
             return
         }

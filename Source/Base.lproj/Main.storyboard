@@ -117,7 +117,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UZq-6A-MRc">
-                                                    <rect key="frame" x="2" y="6" width="287" height="44"/>
+                                                    <rect key="frame" x="-5" y="3" width="287" height="49.5"/>
                                                     <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="287" id="KyH-Hh-fWP"/>
@@ -130,7 +130,7 @@
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ufx-IT-ja3">
-                                                    <rect key="frame" x="304" y="6" width="54" height="41"/>
+                                                    <rect key="frame" x="304" y="3" width="54" height="46.5"/>
                                                     <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="54" id="Bc1-68-PZl"/>
@@ -188,7 +188,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wvV-2f-ShA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-581.25" y="231.91800878477304"/>
+            <point key="canvasLocation" x="-1031" y="-30"/>
         </scene>
         <!--Help View Controller-->
         <scene sceneID="SJ5-qL-JDu">
@@ -202,31 +202,32 @@
                         <rect key="frame" x="0.0" y="0.0" width="880" height="677"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="help" translatesAutoresizingMaskIntoConstraints="NO" id="gLn-8S-ygD">
-                                <rect key="frame" x="7" y="0.0" width="147" height="677"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="help" translatesAutoresizingMaskIntoConstraints="NO" id="gLn-8S-ygD">
+                                <rect key="frame" x="7" y="8" width="147" height="649"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="147" id="ZCK-fa-oEa"/>
                                 </constraints>
                             </imageView>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LFJ-2t-2Yd">
-                                <rect key="frame" x="162" y="8" width="718" height="669"/>
+                                <rect key="frame" x="162" y="8" width="707" height="649"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                         </subviews>
+                        <color key="backgroundColor" red="0.44509438451776651" green="0.38916503771795746" blue="0.045995136620868321" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <accessibility key="accessibilityConfiguration">
                             <accessibilityTraits key="traits" staticText="YES"/>
                         </accessibility>
                         <constraints>
-                            <constraint firstItem="gLn-8S-ygD" firstAttribute="top" secondItem="wV2-J6-T2n" secondAttribute="bottom" constant="8" symbolic="YES" id="DHp-sJ-HPh"/>
+                            <constraint firstItem="gLn-8S-ygD" firstAttribute="top" secondItem="wV2-J6-T2n" secondAttribute="bottom" constant="8" id="DHp-sJ-HPh"/>
                             <constraint firstItem="gLn-8S-ygD" firstAttribute="leading" secondItem="dWY-RQ-I3o" secondAttribute="leadingMargin" constant="-13" id="QY8-qm-3mi"/>
                             <constraint firstItem="LFJ-2t-2Yd" firstAttribute="leading" secondItem="gLn-8S-ygD" secondAttribute="trailing" constant="8" symbolic="YES" id="Xhp-0N-w4O"/>
-                            <constraint firstItem="LFJ-2t-2Yd" firstAttribute="bottom" secondItem="A4n-4y-7J1" secondAttribute="top" id="edM-rB-508"/>
+                            <constraint firstItem="LFJ-2t-2Yd" firstAttribute="bottom" secondItem="A4n-4y-7J1" secondAttribute="top" constant="-20" id="edM-rB-508"/>
                             <constraint firstItem="gLn-8S-ygD" firstAttribute="top" secondItem="LFJ-2t-2Yd" secondAttribute="top" id="f31-jd-41Y"/>
-                            <constraint firstItem="gLn-8S-ygD" firstAttribute="bottom" secondItem="A4n-4y-7J1" secondAttribute="top" id="lIT-ia-fTM"/>
-                            <constraint firstAttribute="trailing" secondItem="LFJ-2t-2Yd" secondAttribute="trailing" id="nre-rt-VVo"/>
+                            <constraint firstItem="gLn-8S-ygD" firstAttribute="bottom" secondItem="A4n-4y-7J1" secondAttribute="top" constant="-20" id="lIT-ia-fTM"/>
+                            <constraint firstAttribute="trailing" secondItem="LFJ-2t-2Yd" secondAttribute="trailing" constant="11" id="nre-rt-VVo"/>
                         </constraints>
                     </view>
                     <value key="contentSizeForViewInPopover" type="size" width="900" height="700"/>
@@ -237,10 +238,10 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8mt-XW-AV7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-419.53125" y="-491.50805270863833"/>
+            <point key="canvasLocation" x="-898.24218749999989" y="-363.25036603221082"/>
         </scene>
     </scenes>
     <resources>
-        <image name="help" width="306" height="1504"/>
+        <image name="help" width="400" height="1656"/>
     </resources>
 </document>

@@ -16,6 +16,7 @@
 		1D1490721F9FA199004B538F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1D1490701F9FA199004B538F /* LaunchScreen.storyboard */; };
 		1D6C3A042127855F000F7E73 /* WidgetGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C3A032127855F000F7E73 /* WidgetGroup.swift */; };
 		1D6C3A06212D2E4F000F7E73 /* ControlDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C3A05212D2E4F000F7E73 /* ControlDisplay.swift */; };
+		1D6C3A152135AB36000F7E73 /* help.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1D6C3A142135AB35000F7E73 /* help.txt */; };
 		1DCAC5751FA349E6000E90E8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1DCAC5731FA349E6000E90E8 /* Main.storyboard */; };
 		1DD9891E20797A7600B209A5 /* ArcBall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD9891D20797A7600B209A5 /* ArcBall.swift */; };
 		1DDB7FBA20D9E5150052FFDE /* MetalTextureView.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1DDB7FB820D9E5150052FFDE /* MetalTextureView.metal */; };
@@ -36,6 +37,7 @@
 		1D594DC6206B17F900A7EB3A /* JosLeysKleinian.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JosLeysKleinian.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D6C3A032127855F000F7E73 /* WidgetGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WidgetGroup.swift; sourceTree = "<group>"; };
 		1D6C3A05212D2E4F000F7E73 /* ControlDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlDisplay.swift; sourceTree = "<group>"; };
+		1D6C3A142135AB35000F7E73 /* help.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = help.txt; sourceTree = "<group>"; };
 		1DCAC5741FA349E6000E90E8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1DD9891D20797A7600B209A5 /* ArcBall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArcBall.swift; sourceTree = "<group>"; };
 		1DDB7FB820D9E5150052FFDE /* MetalTextureView.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = MetalTextureView.metal; sourceTree = "<group>"; };
@@ -86,6 +88,7 @@
 				1DDB7FB820D9E5150052FFDE /* MetalTextureView.metal */,
 				1DCAC5731FA349E6000E90E8 /* Main.storyboard */,
 				1D1490621F9FA199004B538F /* AppDelegate.swift */,
+				1D6C3A142135AB35000F7E73 /* help.txt */,
 				1D14906E1F9FA199004B538F /* Assets.xcassets */,
 				1D1490701F9FA199004B538F /* LaunchScreen.storyboard */,
 				1D1490731F9FA199004B538F /* Info.plist */,
@@ -156,6 +159,7 @@
 				1DCAC5751FA349E6000E90E8 /* Main.storyboard in Resources */,
 				1D1490721F9FA199004B538F /* LaunchScreen.storyboard in Resources */,
 				1D14906F1F9FA199004B538F /* Assets.xcassets in Resources */,
+				1D6C3A152135AB36000F7E73 /* help.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

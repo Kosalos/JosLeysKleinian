@@ -1,0 +1,113 @@
+Jos Leys Strange Attractor
+
+The panel on the left holds two kinds of controls:
+buttons, and one or two dimensional widgets.
+
+Widgets:
+Slide your finger up and down the list to select the desired widget.
+Its legend will turn Green.
+
+Now on the image,
+slider your finger to control the widget's parameters.
+
+Double tap on a widget legend to toggle it between
+fast and slow editing.  Red graph background = slow.
+
+Buttons:
+A button command is performed by selecting the
+legend, then releasing your finger.
+
+Note: Double Tap image to toggle display of control panel.
+Note: Swipe control panel up/down to move focus.
+
+A. "Res: Low, High"
+   Set resolution of display.
+   High res is 4 times more pixels, so slower but much clearer.
+B. "Zoom"
+   Affect camera distance from object.
+C. "Max Steps"
+   How often the algorithm attempts to hone in on the object shape.
+D. "FinalIter"
+   How many 'final iterations' the algorithm performs to finese the object.
+E. "BoxIter"
+   Number of 'box iterations' the algorithm performs to finese the object.
+F. "ShowBalls"
+   Toggle whether the distance field spheres are displayed.
+G. "DoInversion"
+   Toggle whether the object folds itself according to inversion params.
+H. "FourGen"
+   Toggle whether the Z axis folds along with the X,Y axes.
+I. "Clamp_I"
+J. "Clamp_DF"
+   During final iterations: push the iterated point left or right depending on the sign of KleinI.
+K. "box_size_x"
+L. "box_size_z"
+   Specify folding positions.
+M. "KleinR"
+N. "KleinI"
+   Specify the Real and Imaginary Kleinian parameters.
+O. "InvCenterXY"
+P. "InvCenterZ"
+   Specify the inversion center position when 'DoInversion' is enabled.
+Q. "DeltaAngle"
+   Control amount of twisting within the object.
+R. "InvRadius"
+   Set the inversion radius.
+S. "DE Scale"
+   I added this to control how quickly the algorithm zeros in during
+   Distance Estimations to the object.
+   Trying to control how many 'dusty pixels' are displayed.
+T. "epsilon"
+   Controls how close the Distance Estimation algorithm needs to get.
+   Smaller values are more accurate, more 'dusty', and slower to determine.
+U. "N epsilon"
+   Another attempt to control 'dusty pixels'.
+   This value determines how far to the left/right/up/down the algorithm
+   looks when finding a neighboring hit point to calculate the Normal vector to the current hit position.
+V. "Bright"
+W. "Shiny"
+   Set the diffuse and specular lighting amounts.
+X. "LightXY  Z"
+   Set the position of the single light source.
+Y. "TintXY  Z"
+   Colorize the object.
+Z. "Save/Load"
+   Launch the Save/Load dialog.
+1. "Reset"
+   Reset to sane default parameters.
+2. "Stereo"
+   Toggles stereo viewing
+   The image is rendered twice, for 'cross-eyed' 3D viewing.
+   With the iPad held two feet away, slightly cross your eyes so that there is a third image in the middle.
+   Relax your gaze, and concentrate only on that middle image, which is in 3D.
+3. "Rotate"
+   Sometimes works great, other times throws the object so far
+   off-screen that you can't recover. (use Save/Load to start again).
+   When 'Rotate' is active:
+   The 'Move' widgets drag the object around. (it slowly glides back to it desired location)
+   The 'Rotate' widget affects the camera distance from the rotation center.
+   Sorry: after quitting Rotate mode, the object is probably hopelessly off-screen.
+4. "Morph"
+   When toggled 'On' all fields that have their widget set to
+   'slow editing style' (Red colored graph background via double tapping the widget)
+   automatically slide their value(s) back and forth.
+5. "Show Params"
+   Just for fun, toggle display of the real-time parameter values.
+
+=================================
+
+"Move"
+   Two widgets that are always in the lower left corner.
+   The first controls X/Y jogging, while the second controls In/Out movement.
+
+"Rotate"
+   Widget always in the lower right corner of the screen controls (sort of)
+   rotation of the image.
+
+"Parallax"
+   When stereo viewing is enabled, use this to set the stereo effect.
+   1. Objects you have decided should appear closer actually do.
+   2. How pronounced the stereo effect is.
+   Note: this will probalby have to be updated whenever you rotate the view.
+
+
