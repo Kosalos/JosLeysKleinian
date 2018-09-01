@@ -41,6 +41,9 @@ class MetalTextureView: MTKView,MTKViewDelegate {
         descriptor.sAddressMode = .repeat
         descriptor.tAddressMode = .repeat
         sampler = device.makeSamplerState(descriptor: descriptor)
+        
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(self.panGesture(_:)))
+        addGestureRecognizer(pan)
     }
     
     //MARK: -
@@ -68,25 +71,21 @@ class MetalTextureView: MTKView,MTKViewDelegate {
 
     var pt = CGPoint()
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for touch in touches {
-            pt = touch.location(in: self)
-        }
-    }
-    
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for touch in touches {
-            var npt = touch.location(in: self)
+    @objc func panGesture(_ sender: UITapGestureRecognizer) {
+        var npt = sender.location(in: self)
+        
+        switch sender.state {
+        case .began :
+            pt = npt
+        case .changed :
             npt.x -= pt.x
             npt.y -= pt.y
-            vc.focusMovement(npt)
+            vc.focusMovement(npt, sender.numberOfTouches)
+        case .ended :
+            pt.x = 0
+            pt.y = 0
+            vc.focusMovement(pt)
+        default : break
         }
     }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        pt.x = 0
-        pt.y = 0
-        vc.focusMovement(pt)
-    }
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) { touchesEnded(touches, with:event) }
 }

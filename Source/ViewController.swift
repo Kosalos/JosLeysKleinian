@@ -418,8 +418,8 @@ class ViewController: UIViewController, WGDelegate {
         if wg.hasFocus() { wg.removeAllFocus() }
     }
     
-    func focusMovement(_ pt:CGPoint) {
-        if wg.hasFocus() { wg.focusMovement(pt); return }
+    func focusMovement(_ pt:CGPoint, _ touchCount:Int = 0) {
+        if wg.hasFocus() { wg.focusMovement(pt,touchCount); return }
         if cTranslate.hasFocus { cTranslate.focusMovement(pt); return }
         if cTranslateZ.hasFocus { cTranslateZ.focusMovement(pt); return }
         if cRotate.hasFocus { cRotate.focusMovement(pt); return }

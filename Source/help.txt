@@ -7,8 +7,12 @@ Widgets:
 Slide your finger up and down the list to select the desired widget.
 Its legend will turn Green.
 
-Now on the image,
-slider your finger to control the widget's parameters.
+Now on the image, slide your finger to control the widget's parameters.
+
+Note: certain widget rows manage a three part parameter (x,y and z).
+    The first graph displays the x,y values, the second graph displays the z value.
+    Slide one finger lt/rt/up/dn to control x,y values.
+    Slide two fingers to control the companion z value.
 
 Double tap on a widget legend to toggle it between
 fast and slow editing.  Red graph background = slow.

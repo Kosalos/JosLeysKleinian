@@ -14,11 +14,12 @@ enum WgIdent { case none,resolution,morph,rotate,stereo,showBalls,doInversion,fo
 
 let NONE:Int = -1
 let FontSZ:CGFloat = 20
-let RowHT:CGFloat = 21
+let RowHT:CGFloat = 23
 let GrphSZ:CGFloat = RowHT - 4
 let TxtYoff:CGFloat = -3
 let Tab1:CGFloat = 5     // graph x1
 let Tab2:CGFloat = 24    // text after graph
+let Tab3:CGFloat = Tab2 + GrphSZ + 3 // text after 2 graphs
 var py = CGFloat()
 
 struct wgEntryData {
@@ -89,8 +90,7 @@ class WidgetGroup: UIView {
     var data:[wgEntryData] = []
     var focus:Int = NONE
     var previousFocus:Int = NONE
-    var dx:Float = 0
-    var dy:Float = 0
+    var delta = float3()
     let color = UIColor.lightGray
     
     func initialize() {
@@ -104,6 +104,9 @@ class WidgetGroup: UIView {
     @objc func handleTap2(_ sender: UITapGestureRecognizer) {
         if focus != NONE {
             data[focus].fastEdit = !data[focus].fastEdit
+            
+            if data[focus].kind == .float3Dual { data[focus+1].fastEdit = !data[focus+1].fastEdit } // companion .z portion of float3()
+            
             setNeedsDisplay()
         }
     }
@@ -132,13 +135,10 @@ class WidgetGroup: UIView {
                 data[index].valuePointerY.storeBytes(of:valueY, as:Float.self)
             }
             
-        case .float3Dual :   // hardwired to .xy fields of float3
+        case .float3Dual :  // alter all fields of float3
             var v:float3 = morphFloat3Value()
             v.x = fClamp2(v.x + amt, data[index].mRange)
             v.y = fClamp2(v.y + amt, data[index].mRange)
-            data[index].valuePointerX.storeBytes(of:v, as:float3.self)
-        case .float3Single :  // hardwired to .z field of float3
-            var v:float3 = morphFloat3Value()
             v.z = fClamp2(v.z + amt, data[index].mRange)
             data[index].valuePointerX.storeBytes(of:v, as:float3.self)
         default : break
@@ -156,44 +156,43 @@ class WidgetGroup: UIView {
         data[dIndex].kind = nKind
     }
     
-    func addCommon(_ ddIndex:Int, _ min:Float, _ max:Float, _ delta:Float, _ iname:String,_ nCmd:WgIdent) {
+    func addCommon(_ ddIndex:Int, _ min:Float, _ max:Float, _ delta:Float, _ iname:String) {
         data[ddIndex].mRange.x = min
         data[ddIndex].mRange.y = max
         data[ddIndex].deltaValue = delta
-        data[dIndex].ident = nCmd
         data[ddIndex].str.append(iname)
     }
     
-    func addSingleFloat(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:WgIdent = .none) {
+    func addSingleFloat(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String) {
         newEntry(.singleFloat)
         data[dIndex].valuePointerX = vx
-        addCommon(dIndex,min,max,delta,iname,nCmd)
+        addCommon(dIndex,min,max,delta,iname)
     }
     
-    func addDualFloat(_ vx:UnsafeMutableRawPointer, _ vy:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:WgIdent = .none) {
+    func addDualFloat(_ vx:UnsafeMutableRawPointer, _ vy:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String) {
         newEntry(.dualFloat)
         data[dIndex].valuePointerX = vx
         data[dIndex].valuePointerY = vy
-        addCommon(dIndex,min,max,delta,iname,nCmd)
+        addCommon(dIndex,min,max,delta,iname)
     }
 
     //MARK:-
     
-    func addFloat3Dual(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:WgIdent = .none) {
+    func addFloat3Dual(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String) {
         newEntry(.float3Dual)
         data[dIndex].valuePointerX = vx
-        addCommon(dIndex,min,max,delta,iname,nCmd)
+        addCommon(dIndex,min,max,delta,iname)
     }
 
-    func addFloat3Single(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:WgIdent = .none) {
+    func addFloat3Single(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String) {
         newEntry(.float3Single)
         data[dIndex].valuePointerX = vx
-        addCommon(dIndex,min,max,delta,iname,nCmd)
+        addCommon(dIndex,min,max,delta,iname)
     }
 
-    func addTriplet(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String, _ nCmd:WgIdent = .none) {
-        addFloat3Dual  (vx, min,max,delta, iname + "XY", nCmd)
-        addFloat3Single(vx, min,max,delta, iname + "Z", nCmd)
+    func addTriplet(_ vx:UnsafeMutableRawPointer, _ min:Float, _ max:Float,  _ delta:Float, _ iname:String) {
+        addFloat3Dual  (vx, min,max,delta, iname)
+        addFloat3Single(vx, min,max,delta, "")
         addLine()
     }
 
@@ -264,7 +263,7 @@ class WidgetGroup: UIView {
     
     func drawGraph(_ index:Int) {
         let d = data[index]
-        let x:CGFloat = 5
+        let x:CGFloat = d.kind == .float3Single ? 8 + GrphSZ : 5
         let rect = CGRect(x:x, y:py, width:GrphSZ, height:GrphSZ)
         
         if d.fastEdit { UIColor.black.set() } else { UIColor.red.set() }
@@ -297,6 +296,10 @@ class WidgetGroup: UIView {
         
         color.set()
         UIBezierPath(rect:rect).stroke()
+
+        let tColor:UIColor = index == focus ? .green : color
+        let tab = data[index].kind == .float3Dual ? Tab3+10 : Tab2+10
+        drawText(tab,py+TxtYoff,tColor,FontSZ,data[index].str[0])
     }
     
     func drawEntry(_ index:Int) {
@@ -304,10 +307,7 @@ class WidgetGroup: UIView {
         data[index].yCoord = py
         
         switch(data[index].kind) {
-        case .singleFloat, .dualFloat, .move, .float3Dual, .float3Single :
-            drawText(Tab2+10,py+TxtYoff,tColor,FontSZ,data[index].str[0])
-            drawGraph(index)
-            
+        case .singleFloat, .dualFloat, .move, .float3Dual, .float3Single : drawGraph(index)
         case .dropDown : drawText(Tab1,py+TxtYoff,tColor,FontSZ,data[index].str[data[index].getInt32Value()])
         case .command  : drawText(Tab1,py+TxtYoff,tColor,FontSZ,data[index].str[0])
         case .string   : drawText(Tab1,py+TxtYoff,tColor,FontSZ, (delegate?.wgGetString(data[index].ident))!)
@@ -332,7 +332,7 @@ class WidgetGroup: UIView {
             py += CGFloat(data[index].deltaValue)
         }
         
-        py += RowHT
+        if data[index].kind != .float3Dual { py += RowHT }
     }
     
     func baseYCoord() -> CGFloat { return 2 }
@@ -375,25 +375,22 @@ class WidgetGroup: UIView {
     
     func update() -> Bool {
         if focus == NONE { return false }
-        if dx == 0 && dy == 0 { return false } // marks end of session
+        if delta == float3() { return false } // marks end of session
 
         switch data[focus].kind {
-        case .float3Single :  // hardwired to .z field of float3
-            var v:float3 = float3Value()
-            v.z = fClamp2(v.z + dx * data[focus].deltaValue, data[focus].mRange)
-            data[focus].valuePointerX.storeBytes(of:v, as:float3.self)
         case .float3Dual :   // hardwired to .xy fields of float3
             var v:float3 = float3Value()
-            v.x = fClamp2(v.x + dx * data[focus].deltaValue, data[focus].mRange)
-            v.y = fClamp2(v.y + dy * data[focus].deltaValue, data[focus].mRange)
+            v.x = fClamp2(v.x + delta.x * data[focus].deltaValue, data[focus].mRange)
+            v.y = fClamp2(v.y + delta.y * data[focus].deltaValue, data[focus].mRange)
+            v.z = fClamp2(v.z + delta.z * data[focus].deltaValue, data[focus].mRange)
             data[focus].valuePointerX.storeBytes(of:v, as:float3.self)
         default :
             if data[focus].isValueWidget() {
-                let valueX = fClamp2(data[focus].getFloatValue(0) + dx * data[focus].deltaValue, data[focus].mRange)
+                let valueX = fClamp2(data[focus].getFloatValue(0) + delta.x * data[focus].deltaValue, data[focus].mRange)
                 data[focus].valuePointerX.storeBytes(of:valueX, as:Float.self)
                 
                 if data[focus].kind == .dualFloat {
-                    let valueY = fClamp2(data[focus].getFloatValue(1) + dy * data[focus].deltaValue, data[focus].mRange)
+                    let valueY = fClamp2(data[focus].getFloatValue(1) + delta.y * data[focus].deltaValue, data[focus].mRange)
                     data[focus].valuePointerY.storeBytes(of:valueY, as:Float.self)
                 }
             }
@@ -414,35 +411,41 @@ class WidgetGroup: UIView {
             if [ .singleFloat, .dualFloat, .float3Dual, .float3Single ].contains(data[focus].kind) { break }
         }
         
+        if data[focus].kind == .float3Single { // hop past the .z widget of float3() group
+            if dir > 0 { focus += 2 }  else { focus -= 1 }
+        }
+
         setNeedsDisplay()
     }
     
     //MARK:-
     
-    func stopChanges() { dx = 0; dy = 0 }
+    func stopChanges() { delta = float3() }
     
-    func focusMovement(_ pt:CGPoint) {
+    func focusMovement(_ pt:CGPoint, _ touchCount:Int) {
         if focus == NONE { return }
         
-        if pt.x == 0 && pt.y == 0 { // panning just ended
+        if touchCount == 0 { // panning just ended
             stopChanges()
             return
         }
         
         let denom:Float = 1000
-        dx =  Float(pt.x) / denom
-        dy = -Float(pt.y) / denom
+
+        delta.y = -Float(pt.y) / denom        
+
+        let dx = Float(pt.x) / denom
+        if touchCount < 2 { delta.x = dx } else { delta.z = dx; delta.y = 0 } // 2 finger pan = .z of float3
         
         if data[focus].kind == .singleFloat {  // largest delta runs the show
-            if fabs(dy) > fabs(dx) { dx = dy }
+            if fabs(delta.y) > fabs(delta.x) { delta.x = delta.y }
         }
         
         // if morphing then always use 'fast edit'
         if !vc.isMorph {
             if !data[focus].fastEdit {
                 let den = Float((data[focus].kind == .move) ? 10 : 100)
-                dx /= den
-                dy /= den
+                delta /= den
             }
         }
         
