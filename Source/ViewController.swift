@@ -114,8 +114,7 @@ class ViewController: UIViewController, WGDelegate, UIImagePickerControllerDeleg
     
     //MARK: -
 
-    func photoLibrary()
-    {
+    func photoLibrary() {
         if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
             let myPickerController = UIImagePickerController()
             myPickerController.delegate = self
@@ -123,17 +122,40 @@ class ViewController: UIViewController, WGDelegate, UIImagePickerControllerDeleg
             present(myPickerController, animated: true, completion: nil)
         }
     }
+    
+    func savedPhotoFilename() -> String {
+        let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
+        let localPath = documentDirectory?.appending("/photo.png")
+        return localPath!
+    }
+
+    func loadSavedPhoto() -> Bool {
+        if let image = UIImage(contentsOfFile: savedPhotoFilename()) {
+            coloringTexture = texture(from: image)
+            return true
+        }
+        
+        return false
+    }
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
             coloringTexture = texture(from: image)
+            control.txtOnOff = 1
+
+            // save copy for next time
+            let data = UIImagePNGRepresentation(image)! as NSData
+            data.write(toFile: savedPhotoFilename(), atomically:true)
         }
-        
+
+        imagePickerControllerDidCancel(picker)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        wg.setNeedsDisplay()
         updateImage()
         dismiss(animated: true, completion: nil)
     }
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) { updateImage(); dismiss(animated: true, completion: nil) }
 
     //MARK: -
     // edit Scheme, Options, Metal API Validation : Disabled
@@ -239,7 +261,6 @@ class ViewController: UIViewController, WGDelegate, UIImagePickerControllerDeleg
             isRotate = !isRotate
             initializeObjectCenterDataset()
         case .morph : isMorph = !isMorph
-//        case .texture : control.txtOnOff = 1 - control.txtOnOff; updateImage()
         default : break
         }
         
@@ -294,8 +315,19 @@ class ViewController: UIViewController, WGDelegate, UIImagePickerControllerDeleg
     func wgOptionSelected(_ ident: WgIdent, _ index: Int) {
         switch ident {
         case .texture :
-            control.txtOnOff = Int32(index > 0 ? 1 : 0)
-            if index == 2 || control.txtSize.x < 1 { photoLibrary() }
+            switch index {
+            case 0 : control.txtOnOff = 0
+            case 1 :
+                if loadSavedPhoto() {
+                    control.txtOnOff = 1
+                }
+                else {
+                    photoLibrary()
+                }
+            default : photoLibrary()
+            }
+            
+            wg.moveFocus(1) // hop to texture widgets
             updateImage()
         default : break
         }

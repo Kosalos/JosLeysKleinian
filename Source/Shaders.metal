@@ -231,12 +231,12 @@ kernel void mandelBoxShader
             float y = normal.z * len;
             float w = control.txtSize.x;
             float h = control.txtSize.y;
-            float xx = (control.txtCenter.x * 4 + x * scale) * (w + len);
-            float yy = (control.txtCenter.y * 4 + y * scale) * (h + len);
+            float xx = w + (control.txtCenter.x * 4 + x * scale) * (w + len);
+            float yy = h + (control.txtCenter.y * 4 + y * scale) * (h + len);
         
             uint2 pt;
             pt.x = uint(fmod(xx,w));
-            pt.y = uint(fmod(yy,h));
+            pt.y = uint(control.txtSize.y - fmod(yy,h)); // flip Y coord
             color = coloringTexture.read(pt).xyz;
         }
         
