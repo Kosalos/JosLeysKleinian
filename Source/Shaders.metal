@@ -229,10 +229,10 @@ kernel void mandelBoxShader
             float len = length(position) / distance;
             float x = normal.x * len;
             float y = normal.z * len;
-            float w = control.txtSize.x - 1;
-            float h = control.txtSize.y - 1;
-            float xx = control.txtCenter.x * w * 4 + x * scale * w;
-            float yy = control.txtCenter.y * h * 4 + y * scale * h;
+            float w = control.txtSize.x;
+            float h = control.txtSize.y;
+            float xx = (control.txtCenter.x * 4 + x * scale) * (w + len);
+            float yy = (control.txtCenter.y * 4 + y * scale) * (h + len);
         
             uint2 pt;
             pt.x = uint(fmod(xx,w));
