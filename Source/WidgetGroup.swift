@@ -10,11 +10,11 @@ protocol WGDelegate {
 }
 
 enum WgEntryKind { case singleFloat,dualFloat,dropDown,option,command,toggle,legend,line,string,color,move,gap,float3Dual,float3Single }
-enum WgIdent { case none,resolution,morph,rotate,stereo,showBalls,doInversion,fourGen,saveLoad,reset,controlDisplay,help }
+enum WgIdent { case none,resolution,morph,rotate,stereo,showBalls,doInversion,fourGen,saveLoad,reset,controlDisplay,help,texture }
 
 let NONE:Int = -1
 let FontSZ:CGFloat = 20
-let RowHT:CGFloat = 23
+let RowHT:CGFloat = 21
 let GrphSZ:CGFloat = RowHT - 4
 let TxtYoff:CGFloat = -3
 let Tab1:CGFloat = 5     // graph x1
@@ -335,7 +335,7 @@ class WidgetGroup: UIView {
         if data[index].kind != .float3Dual { py += RowHT }
     }
     
-    func baseYCoord() -> CGFloat { return 2 }
+    func baseYCoord() -> CGFloat { return 10 }
     
     override func draw(_ rect: CGRect) {
         if vc == nil { return }
@@ -404,16 +404,17 @@ class WidgetGroup: UIView {
     
     func moveFocus(_ dir:Int) {
         if focus == NONE || data.count < 2 { return }
-        
-        while true {
-            focus += dir
-            if focus >= data.count { focus = 0 } else if focus < 0 { focus = data.count-1 }
-            if [ .singleFloat, .dualFloat, .float3Dual, .float3Single ].contains(data[focus].kind) { break }
+
+        func move() {
+            while true {
+                focus += dir
+                if focus >= data.count { focus = 0 } else if focus < 0 { focus = data.count-1 }
+                if [ .singleFloat, .dualFloat, .float3Dual, .float3Single ].contains(data[focus].kind) { break }
+            }
         }
         
-        if data[focus].kind == .float3Single { // hop past the .z widget of float3() group
-            if dir > 0 { focus += 2 }  else { focus -= 1 }
-        }
+        move()
+        if data[focus].kind == .float3Single { move() } // hop past the .z widget of float3() group
 
         setNeedsDisplay()
     }

@@ -95,7 +95,12 @@ Z. "Save/Load"
    When toggled 'On' all fields that have their widget set to
    'slow editing style' (Red colored graph background via double tapping the widget)
    automatically slide their value(s) back and forth.
-5. "Show Params"
+5. "Texture: On, Off"
+   You can select a photo from your library to texture the object.
+   Tap this option to specify the texture status.
+   When On, the companion widgets control the center and scaling of the image.
+
+"Show Params"
    Just for fun, toggle display of the real-time parameter values.
 
 =================================

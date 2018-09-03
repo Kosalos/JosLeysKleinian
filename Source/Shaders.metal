@@ -140,10 +140,10 @@ float3 getNormal
 float3 lighting
 (
  float3 position,
- float distance,
+ float  distance,
+ float3 normal,
  constant Control &control)
 {
-    float3 normal = getNormal(position,control);
     float3 color = normal * control.color;
     
     float3 L = normalize(control.lighting.position - position);
@@ -151,7 +151,7 @@ float3 lighting
     if(dotLN >= 0) {
         color += control.lighting.diffuse * dotLN;
         
-        float3 V = normalize(float3(distance)); // position); // float3(distance));   // <- using position = less color flickering as you navigate
+        float3 V = normalize(float3(position)); // float3(distance));   // <- using position = less color flickering as you navigate
         float3 R = normalize(reflect(-L, normal));
         float dotRV = dot(R, V);
         if(dotRV >= 0) color += control.lighting.specular * pow(dotRV, 2);
@@ -164,7 +164,7 @@ float3 lighting
 
 #define NULL 0
 
-float3 rayMarch
+float rayMarch // distance, or 0
 (
  float3 rayDir,
  constant Control &control,
@@ -184,14 +184,14 @@ float3 rayMarch
                 ++(boundsData->count);
             }
             
-            return lighting(position,distance,control);
+            return distance;
         }
         
         distance += de * control.deScale;
-        if(distance > control.fog) return float3();
+        if(distance > control.fog) return 0;
     }
 
-    return float3();
+    return 0;
 }
 
 //MARK: -
@@ -199,6 +199,7 @@ float3 rayMarch
 kernel void mandelBoxShader
 (
  texture2d<float, access::write> outTexture [[texture(0)]],
+ texture2d<float, access::read> coloringTexture [[texture(1)]],
  constant Control &control [[buffer(0)]],
  device BoundsData *boundsData [[buffer(1)]],   // average position of object hits
  uint2 p [[thread_position_in_grid]])
@@ -215,5 +216,33 @@ kernel void mandelBoxShader
     device BoundsData *b = boundsData;
     if(((p.x & 15) != 0) || (p.y & 15) != 0) b = NULL;
     
-    outTexture.write(float4(rayMarch(direction,control,b),1),p);
+    float3 color = float3();
+
+    float distance = rayMarch(direction,control,b);
+    if(distance > 0) {
+        float3 position = control.camera + distance * direction;
+        float3 normal = getNormal(position,control);
+        
+        // use texture
+        if(control.txtOnOff > 0) {
+            float scale = control.txtCenter.z * 4;
+            float len = length(position) / distance;
+            float x = normal.x * len;
+            float y = normal.z * len;
+            float w = control.txtSize.x - 1;
+            float h = control.txtSize.y - 1;
+            float xx = control.txtCenter.x * w * 4 + x * scale * w;
+            float yy = control.txtCenter.y * h * 4 + y * scale * h;
+        
+            uint2 pt;
+            pt.x = uint(fmod(xx,w));
+            pt.y = uint(fmod(yy,h));
+            color = coloringTexture.read(pt).xyz;
+        }
+        
+        color += lighting(position,distance,normal,control);
+   }
+    
+    outTexture.write(float4(color,1),p);
 }
+

@@ -1,16 +1,18 @@
 import UIKit
 import Metal
+import MetalKit
 import simd
 
 var control = Control()
 var boundsData = BoundsData()
 var vc:ViewController! = nil
 
-class ViewController: UIViewController, WGDelegate {
+class ViewController: UIViewController, WGDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     var aData = ArcBallData()
     var tv:UITextView! = nil
     var cBuffer:MTLBuffer! = nil
     var bBuffer:MTLBuffer! = nil
+    var coloringTexture: MTLTexture!
     var outTextureL: MTLTexture!
     var outTextureR: MTLTexture!
     var pipeline1: MTLComputePipelineState!
@@ -21,7 +23,7 @@ class ViewController: UIViewController, WGDelegate {
     var isRotate:Bool = false
     var isMorph:Bool = false
     var showControl:Bool = false
-    
+
     let threadGroupCount = MTLSizeMake(20,20, 1)
     var threadGroups = MTLSize()
     
@@ -60,6 +62,14 @@ class ViewController: UIViewController, WGDelegate {
             guard let kf1 = defaultLibrary.makeFunction(name: "mandelBoxShader")  else { fatalError() }
             pipeline1 = try device.makeComputePipelineState(function: kf1)
         } catch { fatalError("error creating pipelines") }
+        
+        func loadTexture(_ textureName: String) throws -> MTLTexture {
+            let textureLoader = MTKTextureLoader(device: device)
+            return try textureLoader.newTexture(name: textureName, scaleFactor: 1.0, bundle: nil,  options: nil)
+        }
+
+        control.txtOnOff = 0    // 'no texture'
+        control.txtSize.x = 0   // 'photo not selected'
         
         wg.initialize()
         wg.delegate = self
@@ -103,7 +113,55 @@ class ViewController: UIViewController, WGDelegate {
     }
     
     //MARK: -
+
+    func photoLibrary()
+    {
+        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
+            let myPickerController = UIImagePickerController()
+            myPickerController.delegate = self
+            myPickerController.sourceType = .photoLibrary
+            present(myPickerController, animated: true, completion: nil)
+        }
+    }
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            coloringTexture = texture(from: image)
+        }
+        
+        updateImage()
+        dismiss(animated: true, completion: nil)
+    }
     
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) { updateImage(); dismiss(animated: true, completion: nil) }
+
+    //MARK: -
+    // edit Scheme, Options, Metal API Validation : Disabled
+    //the fix is to turn off Metal API validation under Product -> Scheme -> Options
+    
+    func texture(from image: UIImage) -> MTLTexture {
+        guard let cgImage = image.cgImage else { fatalError("Can't open image \(image)") }
+        
+        let textureLoader = MTKTextureLoader(device: device)
+        do {
+            let textureOut = try textureLoader.newTexture(cgImage:cgImage)
+            
+            control.txtSize.x = Float(cgImage.width)
+            control.txtSize.y = Float(cgImage.height)
+            control.txtCenter.x = control.txtSize.x / 2
+            control.txtCenter.y = control.txtSize.y / 2
+            control.txtCenter.z = 1
+            return textureOut
+        }
+        catch {
+            fatalError("Can't load texture")
+        }
+    }
+
+    //MARK: -
+
+    let tOptions:[String] = [ "Off","On","On + Select Photo" ]
+
     func initializeWidgetGroup() {
         wg.reset()
         wg.addToggle(.resolution)
@@ -149,6 +207,11 @@ class ViewController: UIViewController, WGDelegate {
         wg.addColoredCommand(.stereo,"Stereo")
         wg.addColoredCommand(.rotate,"Rotate")
         wg.addColoredCommand(.morph,"Morph")
+        
+        wg.addLine()
+        wg.addOptionSelect(.texture,"Texture","Select Texture Setting",tOptions);
+        wg.addTriplet(&control.txtCenter,0,1,0.2,"Cent, Scl")
+
         wg.addCommand("Show Params",.controlDisplay)
         wg.addCommand("Help",.help)
     }
@@ -176,6 +239,7 @@ class ViewController: UIViewController, WGDelegate {
             isRotate = !isRotate
             initializeObjectCenterDataset()
         case .morph : isMorph = !isMorph
+//        case .texture : control.txtOnOff = 1 - control.txtOnOff; updateImage()
         default : break
         }
         
@@ -219,6 +283,7 @@ class ViewController: UIViewController, WGDelegate {
         case .stereo : highlight = isStereo
         case .rotate : highlight = isRotate
         case .morph : highlight = isMorph
+        case .texture : highlight = control.txtOnOff > 0
         default : break
         }
         
@@ -228,12 +293,17 @@ class ViewController: UIViewController, WGDelegate {
     
     func wgOptionSelected(_ ident: WgIdent, _ index: Int) {
         switch ident {
+        case .texture :
+            control.txtOnOff = Int32(index > 0 ? 1 : 0)
+            if index == 2 || control.txtSize.x < 1 { photoLibrary() }
+            updateImage()
         default : break
         }
     }
     
     func wgGetOptionString(_ ident: WgIdent) -> String {
         switch ident {
+        case .texture : return control.txtOnOff > 0 ? "Texture: On" : "Texture: Off"
         default : return "noOption"
         }
     }
@@ -581,7 +651,6 @@ class ViewController: UIViewController, WGDelegate {
         if who == 0 { c.camera.x -= control.parallax }
         if who == 1 { c.camera.x += control.parallax }
         c.lighting.position = normalize(c.lighting.position)
-        
         cBuffer.contents().copyMemory(from: &c, byteCount:MemoryLayout<Control>.stride)
         
         boundsData.position = float3()  // reset object's position accumulator fields
@@ -593,6 +662,7 @@ class ViewController: UIViewController, WGDelegate {
         
         commandEncoder.setComputePipelineState(pipeline1)
         commandEncoder.setTexture(who == 0 ? outTextureL : outTextureR, index: 0)
+        commandEncoder.setTexture(coloringTexture, index: 1)
         commandEncoder.setBuffer(cBuffer, offset: 0, index: 0)
         commandEncoder.setBuffer(bBuffer, offset: 0, index: 1)
         commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCount)
@@ -602,3 +672,4 @@ class ViewController: UIViewController, WGDelegate {
         commandBuffer.waitUntilCompleted()
     }
 }
+

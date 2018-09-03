@@ -67,5 +67,10 @@ typedef struct {
     
     float DeltaAngle;
     float InvRadius;
-    float deScale;    
+    float deScale;
+    
+    int txtOnOff;
+    vector_float2 txtSize;
+    vector_float3 txtCenter;
+
 }  Control;
